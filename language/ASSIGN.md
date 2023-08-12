@@ -1,7 +1,0 @@
-## simple variable assignment
-
-```ts
-
-
-
-```
