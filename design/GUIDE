@@ -1,0 +1,44 @@
+Orkish programming language guide
+
+-- Keywords english translation 
+
+Syntax is always updated for more accurate Orkish.
+
+| Orkish  | English |
+|---------|---------|
+| shal    | in      |
+| ukeav   | set     |
+| prinav  | print   |
+| katu    | here    |
+| iuk     | is      |
+| avhem   | them    |
+| agh     | and     |
+| mubarum | end     |
+| bugd    | call    |
+
+-- Hello world
+
+```
+shal hello ukeav "hello world".
+
+prinav hello.
+```
+
+Not allowed empty variable assignment.
+
+Typing is dynamic.
+
+-- Procedures
+
+Declaration:
+
+```
+katu iuk HelloWorld avhem
+shal hello ukeav "hello world" agh prinav hello mubarum
+```
+
+Apply:
+
+```
+bugd HelloWorld.
+```
