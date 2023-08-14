@@ -24,7 +24,8 @@ interface ASTNode {
   ternary?: ASTNode,
   expr?: boolean,
   block?: boolean,
-  var_stmt?: boolean,
+  var_block?: boolean,
+  end_without_token?: boolean,
 }
 const AST: { [tag: string]: ASTNode } = {
   shal: {
@@ -46,7 +47,10 @@ const AST: { [tag: string]: ASTNode } = {
         },
         right: {
           tag: Tag.agh,
-          js_code: ";",
+          js_code: "; ",
+          left: {
+            expr: true,
+          }
         }
       }
     }
@@ -68,6 +72,11 @@ const AST: { [tag: string]: ASTNode } = {
           expr: true
         }
       },
+      ternary: {
+        tag: Tag.mubarum,
+        end_without_token: true,
+        js_code: "; ",
+      }
     }
   },
   katu: {
@@ -113,7 +122,7 @@ const AST: { [tag: string]: ASTNode } = {
         tag: Tag.avhem,
         js_code: '{\n',
         left: {
-          var_stmt: true,
+          var_block: true,
           left: {
             tag: Tag.mubarum,
             js_code: '}\n',
@@ -259,35 +268,53 @@ class CodeGen extends Parser {
     this.curr_token = this.parse()
     if (this.curr_token) {
       this.eval_ast(AST[this.curr_token.key])
-      if (this.syntax_error_status > 0)
+      if (this.syntax_error_status > 0) {
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key
+      }
       this.lex_i--;
     }
   }
   private eval_ast(tree: ASTNode | undefined) {
     if (!tree || this.syntax_error_status < 0) return
-    if (Array.isArray(tree.tag)) {
+    if (tree.block) {
+      if (this.curr_token)
+        this.eval_ast(AST_BLOCK[this.curr_token.key])
+      if (this.syntax_error_status > 0)
+        throw 'SYNTAX ERROR ' + this.syntax_error_token.key
+      else
+        this.syntax_error_status = 0
+    }
+    else if (tree.expr) {
+      if (this.curr_token)
+        this.eval_ast(AST_EXPR[this.curr_token.key])
+      if (this.syntax_error_status > 0)
+        throw 'SYNTAX ERROR ' + this.syntax_error_token.key
+      else
+        this.syntax_error_status = 0
+    }
+    else if (Array.isArray(tree.tag)) {
       if (this.curr_token && tree.tag.includes(this.curr_token.tag)) {
         if (tree.js_code)
           this.stdout += this.gen_code(tree.js_code)
-        this.curr_token = this.lex()
+        if (!tree.end_without_token)
+          this.curr_token = this.lex()
       }
       else {
-        if (!this.syntax_error_status)
+        if (this.syntax_error_status === 0)
           this.syntax_error_status = 1
         if (this.curr_token)
           this.syntax_error_token = this.curr_token
         return
       }
-
     } else {
       if (this.curr_token && tree.tag === this.curr_token.tag) {
         if (tree.js_code)
           this.stdout += this.gen_code(tree.js_code)
-        this.curr_token = this.lex()
+        if (!tree.end_without_token)
+          this.curr_token = this.lex()
       }
       else {
-        if (!this.syntax_error_status)
+        if (this.syntax_error_status === 0)
           this.syntax_error_status = 1
         if (this.curr_token)
           this.syntax_error_token = this.curr_token
@@ -329,6 +356,9 @@ class Lugburz {
 shal hello ukeav "hello world".
 
 ukhow hello.
+
+katu iuk HelloWorld avhem
+shal hello ukeav "hello world" agh ukhow hello mubarum
     `)
     console.log(this.compiler.files.stdout)
   }
