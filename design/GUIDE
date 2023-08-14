@@ -4,24 +4,27 @@ Orkish programming language guide
 
 Syntax is always updated for more accurate Orkish.
 
-| Orkish  | English |
-|---------|---------|
-| shal    | in      |
-| ukeav   | set     |
-| prinav  | print   |
-| katu    | here    |
-| iuk     | is      |
-| avhem   | them    |
-| agh     | and     |
-| mubarum | end     |
-| bugd    | call    |
+| Orkish    | English |
+|-----------|---------|
+| shal      | in      |
+| ukeav     | set     |
+| ukhow     | print   |
+| katu      | here    |
+| iuk       | is      |
+| avhem     | them    |
+| agh       | and     |
+| mubarum   | end     |
+| bugd      | call    |
+| ukavrucav | struct  |
+| geav      | get     |
+| ro        | of      |
 
 -- Hello world
 
 ```
 shal hello ukeav "hello world".
 
-prinav hello.
+ukhow hello.
 ```
 
 Not allowed empty variable assignment.
@@ -34,7 +37,7 @@ Declaration:
 
 ```
 katu iuk HelloWorld avhem
-shal hello ukeav "hello world" agh prinav hello mubarum
+shal hello ukeav "hello world" agh ukhow hello mubarum
 ```
 
 Apply:
@@ -42,3 +45,14 @@ Apply:
 ```
 bugd HelloWorld.
 ```
+
+-- Objects
+
+```
+ukavrucav Obj avhem var1 var2 var3 mubarum
+
+ro Obj geav var1 ukeav 0.
+
+ro Obj geav var1.
+```
+
