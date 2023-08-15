@@ -51,6 +51,11 @@ const AST: { [tag: string]: ASTNode } = {
           left: {
             expr: true,
           }
+        },
+        ternary: {
+          tag: Tag.mubarum,
+          end_without_token: true,
+          js_code: "; ",
         }
       }
     }
@@ -276,7 +281,12 @@ class CodeGen extends Parser {
   }
   private eval_ast(tree: ASTNode | undefined) {
     if (!tree || this.syntax_error_status < 0) return
-    if (tree.block) {
+    if (tree.var_block) {
+      while (this.curr_token?.tag === Tag.id) {
+        this.stdout += this.gen_code('$key;\n')
+        this.curr_token = this.lex()
+      }
+    } else if (tree.block) {
       if (this.curr_token)
         this.eval_ast(AST_BLOCK[this.curr_token.key])
       if (this.syntax_error_status > 0)
@@ -359,6 +369,9 @@ ukhow hello.
 
 katu iuk HelloWorld avhem
 shal hello ukeav "hello world" agh ukhow hello mubarum
+
+ukavrucav Obj avhem var1 var2 var3 mubarum
+
     `)
     console.log(this.compiler.files.stdout)
   }
