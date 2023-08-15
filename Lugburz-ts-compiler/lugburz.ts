@@ -264,12 +264,14 @@ class CodeGen extends Parser {
   private curr_token: Token | undefined;
   private syntax_error_status: number;
   private syntax_error_token: Token
+  private syntax_block_level: number;
   constructor(compiler: Compiler) {
     super(compiler)
     this.stdout = ''
   }
   public gen() {
     this.syntax_error_status = 0
+    this.syntax_block_level = 0
     this.curr_token = this.parse()
     if (this.curr_token) {
       this.eval_ast(AST[this.curr_token.key])
@@ -304,9 +306,13 @@ class CodeGen extends Parser {
     }
     else if (Array.isArray(tree.tag)) {
       if (this.curr_token && tree.tag.includes(this.curr_token.tag)) {
+        if (tree.tag.includes(Tag.avhem))
+          this.syntax_block_level++
         if (tree.js_code)
           this.stdout += this.gen_code(tree.js_code)
-        if (!tree.end_without_token)
+        if (this.syntax_block_level && tree.end_without_token)
+          this.syntax_block_level--
+        else
           this.curr_token = this.lex()
       }
       else {
@@ -318,9 +324,13 @@ class CodeGen extends Parser {
       }
     } else {
       if (this.curr_token && tree.tag === this.curr_token.tag) {
+        if (tree.tag === Tag.avhem)
+          this.syntax_block_level++
         if (tree.js_code)
           this.stdout += this.gen_code(tree.js_code)
-        if (!tree.end_without_token)
+        if (this.syntax_block_level && tree.end_without_token)
+          this.syntax_block_level--
+        else
           this.curr_token = this.lex()
       }
       else {

@@ -1,6 +1,6 @@
-Orkish programming language guide
+## Orkish programming language guide
 
--- Keywords english translation 
+### Keywords english translation 
 
 Syntax is always updated for more accurate Orkish.
 
@@ -19,7 +19,7 @@ Syntax is always updated for more accurate Orkish.
 | geav      | get     |
 | ro        | of      |
 
--- Hello world
+### Hello world
 
 ```
 shal hello ukeav "hello world".
@@ -31,28 +31,39 @@ Not allowed empty variable assignment.
 
 Typing is dynamic.
 
--- Procedures
+### Procedures
 
-Declaration:
+#### Declaration:
 
 ```
 katu iuk HelloWorld avhem
 shal hello ukeav "hello world" agh ukhow hello mubarum
 ```
 
-Apply:
+#### Apply:
 
 ```
 bugd HelloWorld.
 ```
 
--- Objects
+### Objects
+
+#### Declaration:
 
 ```
 ukavrucav Obj avhem var1 var2 var3 mubarum
+```
 
-ro Obj geav var1 ukeav 0.
+#### Acess:
 
+```
 ro Obj geav var1.
 ```
+
+#### Assignment:
+
+```
+ro Obj geav var1 ukeav 0.
+```
+
 
