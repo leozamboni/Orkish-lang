@@ -10,8 +10,11 @@ enum Tag {
   ro,
   bugd,
   ukavrucav,
+  ukpliav,
+  'nauk-gex',
   agh,
   str,
+  regex,
   numb,
   id,
   dot,
@@ -28,7 +31,7 @@ interface ASTNode {
   end_without_token?: boolean,
 }
 const AST: { [tag: string]: ASTNode } = {
-  shal: {
+  [Tag.shal]: {
     tag: Tag.shal,
     js_code: "let ",
     left: {
@@ -60,7 +63,7 @@ const AST: { [tag: string]: ASTNode } = {
       }
     }
   },
-  ukhow: {
+  [Tag.ukhow]: {
     tag: Tag.ukhow,
     js_code: "process.stdout.write(",
     left: {
@@ -84,7 +87,7 @@ const AST: { [tag: string]: ASTNode } = {
       }
     }
   },
-  katu: {
+  [Tag.katu]: {
     tag: Tag.katu,
     js_code: "function ",
     left: {
@@ -106,7 +109,7 @@ const AST: { [tag: string]: ASTNode } = {
       }
     }
   },
-  bugd: {
+  [Tag.bugd]: {
     tag: Tag.bugd,
     left: {
       tag: Tag.id,
@@ -117,7 +120,7 @@ const AST: { [tag: string]: ASTNode } = {
       }
     }
   },
-  ukavrucav: {
+  [Tag.ukavrucav]: {
     tag: Tag.ukavrucav,
     js_code: "class ",
     left: {
@@ -136,7 +139,7 @@ const AST: { [tag: string]: ASTNode } = {
       }
     }
   },
-  ro: {
+  [Tag.ro]: {
     tag: Tag.ro,
     left: {
       tag: Tag.id,
@@ -166,17 +169,33 @@ const AST: { [tag: string]: ASTNode } = {
         }
       }
     }
+  },
+  [Tag.str]: {
+    tag: Tag.str,
+    js_code: "$key",
+    left: {
+      tag: Tag.ukpliav,
+      js_code: ".split(",
+      left: {
+        tag: Tag["nauk-gex"],
+        js_code: "new RegExp(",
+        left: {
+          tag: Tag.regex,
+          js_code: "$key));",
+        }
+      }
+    }
   }
 }
 const AST_BLOCK = AST
 const AST_EXPR = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      ['shal', 'bugd', 'ukhow'].includes(key)));
+      ['shal', 'bugd', 'ukhow'].includes(Tag[key])));
 const AST_CLASS_BLOCK = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      ['shal'].includes(key)));
+      ['shal'].includes(Tag[key])));
 class Token {
   key: string;
   tag: Tag
@@ -200,6 +219,11 @@ class Str extends Token {
     super(k, t);
   }
 }
+class Regex extends Token {
+  constructor(k, t) {
+    super(k, t);
+  }
+}
 class Files {
   public stdout: string;
   public stderr: string;
@@ -214,7 +238,7 @@ class Scanner {
   splited: string[];
   constructor(files: Files) {
     this.splited = files.stdin
-      .split(/(".*?")|[ \n]+|(\.)/)
+      .split(/(\/.*?\/g)|(".*?")|[ \n]+|(\.)/)
       .filter(e => e)
     console.log(this.splited)
   }
@@ -244,6 +268,8 @@ class Lexer extends Scanner {
     this.lex_i++;
     if (result === '.')
       return new Word(result, Tag.dot)
+    if (result[0] === "/")
+      return new Regex(result, Tag.regex)
     if (result[0] === "\"")
       return new Str(result, Tag.str)
     if (Tag[result])
@@ -274,7 +300,7 @@ class CodeGen extends Parser {
     this.syntax_block_level = 0
     this.curr_token = this.parse()
     if (this.curr_token) {
-      this.eval_ast(AST[this.curr_token.key])
+      this.eval_ast(AST[this.curr_token.tag])
       if (this.syntax_error_status > 0) {
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key
       }
@@ -285,12 +311,12 @@ class CodeGen extends Parser {
     if (!tree || this.syntax_error_status < 0) return
     if (tree.var_block) {
       while (this.curr_token?.tag === Tag.id) {
-        this.stdout += this.gen_code('$key;\n')
+        this.code('$key;\n')
         this.curr_token = this.lex()
       }
     } else if (tree.block) {
       if (this.curr_token)
-        this.eval_ast(AST_BLOCK[this.curr_token.key])
+        this.eval_ast(AST_BLOCK[this.curr_token.tag])
       if (this.syntax_error_status > 0)
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key
       else
@@ -298,7 +324,7 @@ class CodeGen extends Parser {
     }
     else if (tree.expr) {
       if (this.curr_token)
-        this.eval_ast(AST_EXPR[this.curr_token.key])
+        this.eval_ast(AST_EXPR[this.curr_token.tag])
       if (this.syntax_error_status > 0)
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key
       else
@@ -309,7 +335,7 @@ class CodeGen extends Parser {
         if (tree.tag.includes(Tag.avhem))
           this.syntax_block_level++
         if (tree.js_code)
-          this.stdout += this.gen_code(tree.js_code)
+          this.code(tree.js_code)
         if (this.syntax_block_level && tree.end_without_token)
           this.syntax_block_level--
         else
@@ -327,7 +353,7 @@ class CodeGen extends Parser {
         if (tree.tag === Tag.avhem)
           this.syntax_block_level++
         if (tree.js_code)
-          this.stdout += this.gen_code(tree.js_code)
+          this.code(tree.js_code)
         if (this.syntax_block_level && tree.end_without_token)
           this.syntax_block_level--
         else
@@ -347,10 +373,11 @@ class CodeGen extends Parser {
     this.eval_ast(tree?.left)
     this.eval_ast(tree?.right)
   }
-  private gen_code(code: string) {
+  private code(code: string) {
     if (code.includes('$key'))
-      return code.replace('$key', this.curr_token?.key ?? '')
-    return code
+      this.stdout += code.replace('$key', this.curr_token?.key ?? '')
+    else
+      this.stdout += code
   }
 }
 class Compiler {
@@ -381,6 +408,12 @@ katu iuk HelloWorld avhem
 shal hello ukeav "hello world" agh ukhow hello mubarum
 
 ukavrucav Obj avhem var1 var2 var3 mubarum
+
+ro Obj geav var1.
+
+ro Obj geav var1 ukeav 0.
+
+"Hello World" ukpliav nauk-gex /[ ]/g.
 
     `)
     console.log(this.compiler.files.stdout)

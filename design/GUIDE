@@ -18,7 +18,9 @@ Syntax is always updated for more accurate Orkish.
 | ukavrucav | struct  |
 | geav      | get     |
 | ro        | of      |
-
+| ukpliav   | split   |
+| nauk-gex  | regex   |
+ 
 ### Hello world
 
 ```
@@ -66,4 +68,8 @@ ro Obj geav var1.
 ro Obj geav var1 ukeav 0.
 ```
 
+### RegExp
 
+```
+"Hello World" ukpliav nauk-gex /[ ]/g.
+```
