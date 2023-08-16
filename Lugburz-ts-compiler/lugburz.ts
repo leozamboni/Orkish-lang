@@ -2,7 +2,7 @@ enum Tag {
   shal = 256, ukeav, katu, avhem, ukhow, mubarum, iuk, geav, ro,
   bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
   differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
-  maavch,
+  maavch, um,
 }
 interface ASTNode {
   tag?: Tag | Tag[],
@@ -302,7 +302,31 @@ const AST: { [tag: string]: ASTNode } = {
         expr: true,
       }
     },
-
+  },
+  [Tag.um]: {
+    tag: Tag.um,
+    js_code: 'if ',
+    left: {
+      tag: Tag.lefav,
+      js_code: '(',
+      left: {
+        tag: Tag.brackeav,
+        left: {
+          expr: true,
+          right: {
+            tag: Tag.avhem,
+            js_code: '{\n',
+            left: {
+              block: true,
+              left: {
+                tag: Tag.mubarum,
+                js_code: '\n}\n'
+              },
+            },
+          },
+        },
+      },
+    },
   }
 }
 const AST_BLOCK = AST
@@ -417,9 +441,11 @@ class CodeGen extends Parser {
     this.syntax_error_status = 0
     this.syntax_block_level = 0
     this.curr_token = this.parse()
+    // console.log('CURR->', this.curr_token)
     if (this.curr_token) {
       this.eval_ast(AST[this.curr_token.tag])
       if (this.syntax_error_status > 0) {
+        console.log(this.stdout)
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key
       }
       this.lex_i--;
@@ -451,8 +477,10 @@ class CodeGen extends Parser {
         this.syntax_error_status = 0
     }
     else if (tree.expr) {
+      // console.log('entrou -> ', this.curr_token)
       if (this.curr_token)
         this.eval_ast(AST_EXPR[this.curr_token.tag])
+      // console.log('SAIU -> ', this.curr_token)
       if (this.syntax_error_status > 0)
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key + ' SHOULD BE ' + tree.js_code
       else
@@ -563,7 +591,7 @@ noav avrue.
 
 lefav brackeav noav avrue righav brackeav 
 
-
+um lefav brackeav avrue differenav faluke righav brackeav avhem ukhow hello mubarum
     `)
     console.log(this.compiler.files.stdout)
   }
