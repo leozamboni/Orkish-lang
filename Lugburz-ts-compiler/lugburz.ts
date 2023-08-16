@@ -1,33 +1,20 @@
 enum Tag {
-  shal = 256,
-  ukeav,
-  katu,
-  avhem,
-  ukhow,
-  mubarum,
-  iuk,
-  geav,
-  ro,
-  bugd,
-  ukavrucav,
-  ukpliav,
-  'nauk-gex',
-  agh,
-  str,
-  regex,
-  numb,
-  id,
-  dot,
+  shal = 256, ukeav, katu, avhem, ukhow, mubarum, iuk, geav, ro,
+  bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
+  differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
+  maavch,
 }
 interface ASTNode {
   tag?: Tag | Tag[],
-  js_code?: string,
+  js_code?: string | ((tag?: Tag) => string),
   left?: ASTNode,
   right?: ASTNode,
   ternary?: ASTNode,
+  quaternary?: ASTNode,
   expr?: boolean,
   block?: boolean,
   var_block?: boolean,
+  inline_obj_acess?: boolean,
   end_without_token?: boolean,
 }
 const AST: { [tag: string]: ASTNode } = {
@@ -145,27 +132,22 @@ const AST: { [tag: string]: ASTNode } = {
       tag: Tag.id,
       js_code: "$key",
       left: {
-        tag: Tag.geav,
-        js_code: '.',
+        inline_obj_acess: true,
         left: {
-          tag: Tag.id,
-          js_code: "$key",
+          tag: Tag.ukeav,
+          js_code: " = ",
           left: {
-            tag: Tag.ukeav,
-            js_code: " = ",
+            tag: [Tag.numb, Tag.str, Tag.id],
+            js_code: "$key",
             left: {
-              tag: [Tag.numb, Tag.str, Tag.id],
-              js_code: "$key",
-              left: {
-                tag: Tag.dot,
-                js_code: ';\n',
-              }
+              tag: Tag.dot,
+              js_code: ';\n',
             }
-          },
-          right: {
-            tag: Tag.dot,
-            js_code: ';\n',
           }
+        },
+        right: {
+          tag: Tag.dot,
+          js_code: ';\n',
         }
       }
     }
@@ -181,17 +163,153 @@ const AST: { [tag: string]: ASTNode } = {
         js_code: "new RegExp(",
         left: {
           tag: Tag.regex,
-          js_code: "$key));",
+          js_code: "$key))",
+          left: {
+            tag: Tag.dot,
+            js_code: ";\n",
+          }
         }
       }
     }
+  },
+  [Tag.avrue]: {
+    tag: Tag.avrue,
+    js_code: 'true',
+    left: {
+      tag: [Tag.agh, Tag.eiavhas, Tag.maavch, Tag.differenav],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.agh: return " && "
+          case Tag.eiavhas: return " || "
+          case Tag.maavch: return " === "
+          case Tag.differenav: return " !== "
+        }
+        return ''
+      },
+      left: {
+        expr: true,
+      }
+    },
+    right: {
+      tag: Tag.dot,
+      js_code: ";\n",
+    },
+    ternary: {
+      tag: Tag.lefav,
+      js_code: "(",
+      left: {
+        tag: Tag.brackeav,
+      }
+    },
+    quaternary: {
+      tag: Tag.righav,
+      js_code: ")",
+      left: {
+        tag: Tag.brackeav,
+      }
+    }
+  },
+  [Tag.faluke]: {
+    tag: Tag.faluke,
+    js_code: 'false',
+    left: {
+      tag: [Tag.agh, Tag.eiavhas, Tag.maavch, Tag.differenav],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.agh: return " && "
+          case Tag.eiavhas: return " || "
+          case Tag.maavch: return " === "
+          case Tag.differenav: return " !== "
+        }
+        return ''
+      },
+      left: {
+        expr: true,
+      }
+    },
+    right: {
+      tag: Tag.dot,
+      js_code: ";\n",
+    },
+    ternary: {
+      tag: Tag.lefav,
+      js_code: "(",
+      left: {
+        tag: Tag.brackeav,
+      }
+    },
+    quaternary: {
+      tag: Tag.righav,
+      js_code: ") ",
+      left: {
+        tag: Tag.brackeav,
+      }
+    }
+  },
+  [Tag.lefav]: {
+    tag: Tag.lefav,
+    js_code: '(',
+    left: {
+      tag: Tag.brackeav,
+      left: {
+        expr: true,
+      },
+      right: {
+        tag: Tag.righav,
+        js_code: ') ',
+        left: {
+          tag: Tag.brackeav,
+        }
+      }
+    },
+  },
+  [Tag.noav]: {
+    tag: Tag.noav,
+    js_code: '!',
+    left: {
+      tag: [Tag.id, Tag.faluke, Tag.avrue],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.faluke: return "false"
+          case Tag.avrue: return "true"
+        }
+        return '$key'
+      },
+      left: {
+        tag: Tag.dot,
+        js_code: ';\n'
+      },
+      right: {
+        tag: Tag.righav,
+        js_code: ") ",
+        left: {
+          tag: Tag.brackeav,
+        }
+      }
+    },
+    right: {
+      tag: [Tag.agh, Tag.eiavhas, Tag.maavch, Tag.differenav],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.agh: return " && "
+          case Tag.eiavhas: return " || "
+          case Tag.maavch: return " === "
+          case Tag.differenav: return " !== "
+        }
+        return ''
+      },
+      left: {
+        expr: true,
+      }
+    },
+
   }
 }
 const AST_BLOCK = AST
 const AST_EXPR = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      ['shal', 'bugd', 'ukhow'].includes(Tag[key])));
+      ['shal', 'bugd', 'ukhow', 'avrue', 'faluke', 'noav', 'lefav'].includes(Tag[key])));
 const AST_CLASS_BLOCK = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
@@ -309,7 +427,17 @@ class CodeGen extends Parser {
   }
   private eval_ast(tree: ASTNode | undefined) {
     if (!tree || this.syntax_error_status < 0) return
-    if (tree.var_block) {
+    if (tree.inline_obj_acess) {
+      while (this.curr_token?.tag === Tag.geav) {
+        this.code('.')
+        this.curr_token = this.lex()
+        if (this.curr_token?.tag === Tag.id)
+          this.code('$key')
+        else
+          break
+        this.curr_token = this.lex()
+      }
+    } else if (tree.var_block) {
       while (this.curr_token?.tag === Tag.id) {
         this.code('$key;\n')
         this.curr_token = this.lex()
@@ -318,7 +446,7 @@ class CodeGen extends Parser {
       if (this.curr_token)
         this.eval_ast(AST_BLOCK[this.curr_token.tag])
       if (this.syntax_error_status > 0)
-        throw 'SYNTAX ERROR ' + this.syntax_error_token.key
+        throw 'SYNTAX ERROR ' + this.syntax_error_token.key + ' SHOULD BE ' + tree
       else
         this.syntax_error_status = 0
     }
@@ -326,7 +454,7 @@ class CodeGen extends Parser {
       if (this.curr_token)
         this.eval_ast(AST_EXPR[this.curr_token.tag])
       if (this.syntax_error_status > 0)
-        throw 'SYNTAX ERROR ' + this.syntax_error_token.key
+        throw 'SYNTAX ERROR ' + this.syntax_error_token.key + ' SHOULD BE ' + tree.js_code
       else
         this.syntax_error_status = 0
     }
@@ -367,17 +495,23 @@ class CodeGen extends Parser {
         return
       }
     }
-    if (!tree.ternary && !tree.left && !tree.right)
+    if (!tree.ternary && !tree.left && !tree.right && !tree.quaternary)
       this.syntax_error_status = -1
     this.eval_ast(tree?.ternary)
+    this.eval_ast(tree?.quaternary)
     this.eval_ast(tree?.left)
     this.eval_ast(tree?.right)
   }
-  private code(code: string) {
-    if (code.includes('$key'))
-      this.stdout += code.replace('$key', this.curr_token?.key ?? '')
+  private code(code: string | ((tag?: Tag) => string)) {
+    let str = ''
+    if (typeof code === 'string')
+      str = code
     else
-      this.stdout += code
+      str = code(this.curr_token?.tag)
+    if (str.includes('$key'))
+      this.stdout += str.replace('$key', this.curr_token?.key ?? '')
+    else
+      this.stdout += str
   }
 }
 class Compiler {
@@ -411,9 +545,24 @@ ukavrucav Obj avhem var1 var2 var3 mubarum
 
 ro Obj geav var1.
 
+ro Obj geav var1 geav var2.
+
 ro Obj geav var1 ukeav 0.
 
+ro Obj geav var1 geav var2 ukeav 1.
+
 "Hello World" ukpliav nauk-gex /[ ]/g.
+
+avrue agh faluke.
+
+lefav brackeav avrue agh faluke righav brackeav 
+
+avrue differenav faluke.
+
+noav avrue.
+
+lefav brackeav noav avrue righav brackeav 
+
 
     `)
     console.log(this.compiler.files.stdout)

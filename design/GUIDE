@@ -4,23 +4,32 @@
 
 Syntax is always updated for more accurate Orkish.
 
-| Orkish    | English |
-|-----------|---------|
-| shal      | in      |
-| ukeav     | set     |
-| ukhow     | print   |
-| katu      | here    |
-| iuk       | is      |
-| avhem     | them    |
-| agh       | and     |
-| mubarum   | end     |
-| bugd      | call    |
-| ukavrucav | struct  |
-| geav      | get     |
-| ro        | of      |
-| ukpliav   | split   |
-| nauk-gex  | regex   |
- 
+| Orkish     | English   |
+|------------|-----------|
+| shal       | in        |
+| ukeav      | set       |
+| ukhow      | print     |
+| katu       | here      |
+| iuk        | is        |
+| avhem      | them      |
+| agh        | and       |
+| mubarum    | end       |
+| bugd       | call      |
+| ukavrucav  | struct    |
+| geav       | get       |
+| eiavhas    | either    |
+| ukpliav    | split     |
+| nauk-gex   | regex     |
+| avrue      | true      |
+| faluke     | false     |
+| or         | or        |
+| noav       | not       |
+| maavch     | match     |
+| lefav      | left      |
+| righav     | right     |
+| brackeav   | bracket   |
+| differenav | not equal |
+
 ### Hello world
 
 ```
@@ -73,3 +82,40 @@ ro Obj geav var1 ukeav 0.
 ```
 "Hello World" ukpliav nauk-gex /[ ]/g.
 ```
+
+### Logical Expr
+
+#### And
+
+```
+avrue agh faluke.
+```
+faluke
+
+#### Or
+
+```
+avrue eiavhas faluke.
+```
+avrue
+
+#### Not
+
+```
+noav avrue.
+```
+faluke
+
+#### Equal
+
+```
+avrue maavch faluke.
+```
+faluke
+
+#### Not Equal
+
+```
+avrue differenav faluke.
+```
+avrue
