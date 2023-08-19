@@ -1,6 +1,6 @@
 ## Orkish programming language guide
 
-### Keywords english translation 
+### Translated glossary 
 
 Syntax is always updated for more accurate Orkish.
 
@@ -34,6 +34,10 @@ Syntax is always updated for more accurate Orkish.
 | avhan            | than           |
 | leukuk           | less           |
 | greaavas         | greater        |
+| pluuk            | plus           |
+| minuuk           | minus          |
+| mulavippak       | multiply       |
+| diviukion        | division       |
 
 ### Hello world
 
@@ -42,6 +46,7 @@ shal hello ukeav "hello world".
 
 ukhow hello.
 ```
+hello world
 
 Not allowed empty variable assignment.
 
@@ -90,7 +95,7 @@ ro Obj geav var1 ukeav 0.
 "Hello World" ukpliav nauk-gex /[ ]/g.
 ```
 
-### Logical Expr
+### Logical expr
 
 #### And
 
@@ -120,40 +125,70 @@ avrue maavch wiavh faluke.
 ```
 faluke
 
-#### Not Equal
+#### Not equal
 
 ```
 avrue differenav ro faluke.
 ```
 avrue
 
-#### Less Than
+#### Less than
 
 ```
 1 leukuk avhan 2.
 ```
 avrue
 
-#### Greater Than
+#### Greater than
 
 ```
 2 greaavas avhan 1.
 ```
 avrue
 
-#### Greater Than or Equal to
+#### Greater than or equal to
 
 ```
 2 greaavas avhan eiavhas maavch wiavh 2.
 ```
 avrue
 
-#### Less Than or Equal to
+#### Less than or equal to
 
 ```
 1 leukuk avhan eiavhas maavch wiavh 2.
 ```
 avrue
+
+### Math expr
+
+#### Plus
+
+```
+1 pluuk 1.
+```
+2
+
+#### Minus
+
+```
+2 minuuk 1.
+```
+1
+
+#### Multiply
+
+```
+2 mulavippak 2.
+```
+4
+
+#### Division
+
+```
+4 diviukion 2.
+```
+2
 
 ### Conditionals
 
@@ -162,5 +197,3 @@ avrue
 ```
 um lefav brackeav avrue differenav ro faluke righav brackeav avhem ukhow hello mubarum
 ```
-
-### Math Expr

@@ -672,10 +672,8 @@ class CodeGen extends Parser {
         this.syntax_error_status = 0
     }
     else if (tree.expr) {
-      // console.log('entrou -> ', this.curr_token)
       if (this.curr_token)
         this.eval_ast(AST_EXPR[this.curr_token.tag])
-      // console.log('SAIU -> ', this.curr_token)
       if (this.syntax_error_status > 0)
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key + ' SHOULD BE ' + tree.js_code
       else

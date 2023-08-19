@@ -1,1 +1,8 @@
 This programming language have no documentation, just explore this dark world.
+
+
+#### Build
+
+pnpm;
+pnpm build;
+
