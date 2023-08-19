@@ -2,7 +2,7 @@ enum Tag {
   shal = 256, ukeav, katu, avhem, ukhow, mubarum, iuk, geav, ro,
   bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
   differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
-  maavch, um,
+  maavch, um, wiavh, leukuk, avhan, greaavas,
 }
 interface ASTNode {
   tag?: Tag | Tag[],
@@ -11,6 +11,10 @@ interface ASTNode {
   right?: ASTNode,
   ternary?: ASTNode,
   quaternary?: ASTNode,
+  quinary?: ASTNode,
+  senary?: ASTNode,
+  septenary?: ASTNode,
+  octonary?: ASTNode,
   expr?: boolean,
   block?: boolean,
   var_block?: boolean,
@@ -176,13 +180,11 @@ const AST: { [tag: string]: ASTNode } = {
     tag: Tag.avrue,
     js_code: 'true',
     left: {
-      tag: [Tag.agh, Tag.eiavhas, Tag.maavch, Tag.differenav],
+      tag: [Tag.agh, Tag.eiavhas],
       js_code: (tag) => {
         switch (tag) {
           case Tag.agh: return " && "
           case Tag.eiavhas: return " || "
-          case Tag.maavch: return " === "
-          case Tag.differenav: return " !== "
         }
         return ''
       },
@@ -207,19 +209,138 @@ const AST: { [tag: string]: ASTNode } = {
       left: {
         tag: Tag.brackeav,
       }
+    },
+    quinary: {
+      tag: Tag.differenav,
+      js_code: " !== ",
+      left: {
+        tag: Tag.ro,
+        left: {
+          expr: true,
+        }
+      }
+    },
+    senary: {
+      tag: Tag.maavch,
+      js_code: " === ",
+      left: {
+        tag: Tag.wiavh,
+        left: {
+          expr: true,
+        }
+      }
+    },
+    septenary: {
+      tag: [Tag.leukuk, Tag.greaavas],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.leukuk: return " < "
+          case Tag.greaavas: return " > "
+        }
+        return ''
+      },
+      left: {
+        tag: Tag.avhan,
+        left: {
+          expr: true,
+        }
+      }
     }
+  },
+  [Tag.numb]: {
+    tag: Tag.numb,
+    js_code: '$key',
+    left: {
+      tag: [Tag.agh, Tag.eiavhas],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.agh: return " && "
+          case Tag.eiavhas: return " || "
+        }
+        return ''
+      },
+      left: {
+        expr: true,
+      }
+    },
+    right: {
+      tag: Tag.dot,
+      js_code: ";\n",
+    },
+    ternary: {
+      tag: Tag.lefav,
+      js_code: "(",
+      left: {
+        tag: Tag.brackeav,
+      }
+    },
+    quaternary: {
+      tag: Tag.righav,
+      js_code: ")",
+      left: {
+        tag: Tag.brackeav,
+      }
+    },
+    quinary: {
+      tag: Tag.differenav,
+      js_code: " !== ",
+      left: {
+        tag: Tag.ro,
+        left: {
+          expr: true,
+        }
+      }
+    },
+    senary: {
+      tag: Tag.maavch,
+      js_code: " === ",
+      left: {
+        tag: Tag.wiavh,
+        left: {
+          expr: true,
+        }
+      }
+    },
+    septenary: {
+      tag: [Tag.leukuk, Tag.greaavas],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.leukuk: return "<"
+          case Tag.greaavas: return ">"
+        }
+        return ''
+      },
+      left: {
+        tag: Tag.avhan,
+        left: {
+          tag: Tag.eiavhas,
+          left: {
+            tag: Tag.maavch,
+            js_code: '=',
+            left: {
+              tag: Tag.wiavh,
+              left: {
+                expr: true,
+              }
+            }
+          }
+        },
+        right: {
+          expr: true,
+        }
+      }
+    },
+  
   },
   [Tag.faluke]: {
     tag: Tag.faluke,
     js_code: 'false',
     left: {
-      tag: [Tag.agh, Tag.eiavhas, Tag.maavch, Tag.differenav],
+      tag: [Tag.agh, Tag.eiavhas],
       js_code: (tag) => {
         switch (tag) {
           case Tag.agh: return " && "
           case Tag.eiavhas: return " || "
-          case Tag.maavch: return " === "
-          case Tag.differenav: return " !== "
         }
         return ''
       },
@@ -243,6 +364,42 @@ const AST: { [tag: string]: ASTNode } = {
       js_code: ") ",
       left: {
         tag: Tag.brackeav,
+      }
+    },
+    quinary: {
+      tag: Tag.differenav,
+      js_code: " !== ",
+      left: {
+        tag: Tag.ro,
+        left: {
+          expr: true,
+        }
+      }
+    },
+    senary: {
+      tag: Tag.maavch,
+      js_code: " === ",
+      left: {
+        tag: Tag.wiavh,
+        left: {
+          expr: true,
+        }
+      }
+    },
+    septenary: {
+      tag: [Tag.leukuk, Tag.greaavas],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.leukuk: return " < "
+          case Tag.greaavas: return " > "
+        }
+        return ''
+      },
+      left: {
+        tag: Tag.avhan,
+        left: {
+          expr: true,
+        }
       }
     }
   },
@@ -288,13 +445,11 @@ const AST: { [tag: string]: ASTNode } = {
       }
     },
     right: {
-      tag: [Tag.agh, Tag.eiavhas, Tag.maavch, Tag.differenav],
+      tag: [Tag.agh, Tag.eiavhas],
       js_code: (tag) => {
         switch (tag) {
           case Tag.agh: return " && "
           case Tag.eiavhas: return " || "
-          case Tag.maavch: return " === "
-          case Tag.differenav: return " !== "
         }
         return ''
       },
@@ -302,6 +457,42 @@ const AST: { [tag: string]: ASTNode } = {
         expr: true,
       }
     },
+    ternary: {
+      tag: Tag.differenav,
+      js_code: " !== ",
+      left: {
+        tag: Tag.ro,
+        left: {
+          expr: true,
+        }
+      }
+    },
+    quaternary: {
+      tag: Tag.maavch,
+      js_code: " === ",
+      left: {
+        tag: Tag.wiavh,
+        left: {
+          expr: true,
+        }
+      }
+    },
+    septenary: {
+      tag: [Tag.leukuk, Tag.greaavas],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.leukuk: return " < "
+          case Tag.greaavas: return " > "
+        }
+        return ''
+      },
+      left: {
+        tag: Tag.avhan,
+        left: {
+          expr: true,
+        }
+      }
+    }
   },
   [Tag.um]: {
     tag: Tag.um,
@@ -333,7 +524,7 @@ const AST_BLOCK = AST
 const AST_EXPR = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      ['shal', 'bugd', 'ukhow', 'avrue', 'faluke', 'noav', 'lefav'].includes(Tag[key])));
+      ['shal', 'bugd', 'ukhow', 'avrue', 'faluke', 'noav', 'lefav', 'numb'].includes(Tag[key])));
 const AST_CLASS_BLOCK = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
@@ -352,18 +543,18 @@ class Word extends Token {
   }
 }
 class Numb extends Token {
-  constructor(k, t) {
-    super(k, t);
+  constructor(k) {
+    super(k, Tag.numb);
   }
 }
 class Str extends Token {
-  constructor(k, t) {
-    super(k, t);
+  constructor(k) {
+    super(k, Tag.str);
   }
 }
 class Regex extends Token {
-  constructor(k, t) {
-    super(k, t);
+  constructor(k) {
+    super(k, Tag.regex);
   }
 }
 class Files {
@@ -408,12 +599,16 @@ class Lexer extends Scanner {
     if (result === '\n')
       this.meta.line++
     this.lex_i++;
+    if (parseInt(result)) {
+      console.log('NUMB-> ', result)
+      return new Numb(result)
+    }
     if (result === '.')
       return new Word(result, Tag.dot)
     if (result[0] === "/")
-      return new Regex(result, Tag.regex)
+      return new Regex(result)
     if (result[0] === "\"")
-      return new Str(result, Tag.str)
+      return new Str(result)
     if (Tag[result])
       return new Word(result, Tag[result])
     return new Word(result, Tag.id)
@@ -523,12 +718,23 @@ class CodeGen extends Parser {
         return
       }
     }
-    if (!tree.ternary && !tree.left && !tree.right && !tree.quaternary)
+    if (!tree.ternary
+      && !tree.left
+      && !tree.right
+      && !tree.quaternary
+      && !tree.quinary
+      && !tree.senary
+      && !tree.septenary
+      && !tree.octonary)
       this.syntax_error_status = -1
-    this.eval_ast(tree?.ternary)
-    this.eval_ast(tree?.quaternary)
     this.eval_ast(tree?.left)
     this.eval_ast(tree?.right)
+    this.eval_ast(tree?.ternary)
+    this.eval_ast(tree?.quaternary)
+    this.eval_ast(tree?.quinary)
+    this.eval_ast(tree?.senary)
+    this.eval_ast(tree?.septenary)
+    this.eval_ast(tree?.octonary)
   }
   private code(code: string | ((tag?: Tag) => string)) {
     let str = ''
@@ -585,13 +791,24 @@ avrue agh faluke.
 
 lefav brackeav avrue agh faluke righav brackeav 
 
-avrue differenav faluke.
+avrue differenav ro faluke.
 
 noav avrue.
 
 lefav brackeav noav avrue righav brackeav 
 
-um lefav brackeav avrue differenav faluke righav brackeav avhem ukhow hello mubarum
+um lefav brackeav avrue differenav ro faluke righav brackeav avhem ukhow hello mubarum
+
+avrue maavch wiavh faluke.
+
+1 leukuk avhan 2.
+
+2 greaavas avhan 1.
+
+2 greaavas avhan eiavhas maavch wiavh 2.
+
+1 leukuk avhan eiavhas maavch wiavh 2.
+
     `)
     console.log(this.compiler.files.stdout)
   }

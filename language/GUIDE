@@ -1,0 +1,166 @@
+## Orkish programming language guide
+
+### Keywords english translation 
+
+Syntax is always updated for more accurate Orkish.
+
+| Orkish           | English        |
+|------------------|----------------|
+| shal             | in             |
+| ukeav            | set            |
+| ukhow            | print          |
+| ro               | of             |
+| wiavh            | with           |
+| katu             | here           |
+| iuk              | is             |
+| avhem            | them           |
+| agh              | and            |
+| mubarum          | end            |
+| bugd             | call           |
+| ukavrucav        | struct         |
+| geav             | get            |
+| eiavhas          | either         |
+| ukpliav          | split          |
+| nauk-gex         | regex          |
+| avrue            | true           |
+| faluke           | false          |
+| noav             | not            |
+| maavch           | match          |
+| lefav            | left           |
+| righav           | right          |
+| brackeav         | bracket        |
+| differenav       | not equal      |
+| um               | if             |
+| avhan            | than           |
+| leukuk           | less           |
+| greaavas         | greater        |
+
+### Hello world
+
+```
+shal hello ukeav "hello world".
+
+ukhow hello.
+```
+
+Not allowed empty variable assignment.
+
+Typing is dynamic.
+
+### Procedures
+
+#### Declaration:
+
+```
+katu iuk HelloWorld avhem
+shal hello ukeav "hello world" agh ukhow hello mubarum
+```
+
+#### Apply:
+
+```
+bugd HelloWorld.
+```
+
+### Objects
+
+#### Declaration:
+
+```
+ukavrucav Obj avhem var1 var2 var3 mubarum
+```
+
+#### Acess:
+
+```
+ro Obj geav var1.
+```
+
+#### Assignment:
+
+```
+ro Obj geav var1 ukeav 0.
+```
+
+### Strings
+
+#### RegExp
+
+```
+"Hello World" ukpliav nauk-gex /[ ]/g.
+```
+
+### Logical Expr
+
+#### And
+
+```
+avrue agh faluke.
+```
+faluke
+
+#### Or
+
+```
+avrue eiavhas faluke.
+```
+avrue
+
+#### Not
+
+```
+noav avrue.
+```
+faluke
+
+#### Equal to
+
+```
+avrue maavch wiavh faluke.
+```
+faluke
+
+#### Not Equal
+
+```
+avrue differenav ro faluke.
+```
+avrue
+
+#### Less Than
+
+```
+1 leukuk avhan 2.
+```
+avrue
+
+#### Greater Than
+
+```
+2 greaavas avhan 1.
+```
+avrue
+
+#### Greater Than or Equal to
+
+```
+2 greaavas avhan eiavhas maavch wiavh 2.
+```
+avrue
+
+#### Less Than or Equal to
+
+```
+1 leukuk avhan eiavhas maavch wiavh 2.
+```
+avrue
+
+### Conditionals
+
+#### Ternary
+
+```
+um lefav brackeav avrue differenav ro faluke righav brackeav avhem ukhow hello mubarum
+```
+
+### Math Expr
