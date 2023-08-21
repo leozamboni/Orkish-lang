@@ -38,6 +38,7 @@ Syntax is always updated for more accurate Orkish.
 | minuuk           | minus          |
 | mulavippak       | multiply       |
 | diviukion        | division       |
+| eluke            | else           |
 
 ### Hello world
 
@@ -54,14 +55,14 @@ Typing is dynamic.
 
 ### Procedures
 
-#### Declaration:
+#### Declaration
 
 ```
 katu iuk HelloWorld avhem
 shal hello ukeav "hello world" agh ukhow hello mubarum
 ```
 
-#### Apply:
+#### Apply
 
 ```
 bugd HelloWorld.
@@ -69,19 +70,19 @@ bugd HelloWorld.
 
 ### Objects
 
-#### Declaration:
+#### Declaration
 
 ```
 ukavrucav Obj avhem var1 var2 var3 mubarum
 ```
 
-#### Acess:
+#### Acess
 
 ```
 ro Obj geav var1.
 ```
 
-#### Assignment:
+#### Assignment
 
 ```
 ro Obj geav var1 ukeav 0.
@@ -190,10 +191,18 @@ avrue
 ```
 2
 
-### Conditionals
+### Conditionals 
 
-#### Ternary
+#### if
 
 ```
-um lefav brackeav avrue differenav ro faluke righav brackeav avhem ukhow hello mubarum
+um lefav brackeav avrue differenav ro faluke 
+righav brackeav avhem ukhow hello mubarum
+```
+
+#### if... else
+
+```
+um lefav brackeav avrue differenav ro faluke 
+righav brackeav avhem ukhow hello eluke avhem ukhow hello mubarum
 ```

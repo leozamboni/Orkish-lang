@@ -2,7 +2,7 @@ enum Tag {
   shal = 256, ukeav, katu, avhem, ukhow, mubarum, iuk, geav, ro,
   bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
   differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
-  maavch, um, wiavh, leukuk, avhan, greaavas,
+  maavch, um, wiavh, leukuk, avhan, greaavas, eluke,
 }
 interface ASTNode {
   tag?: Tag | Tag[],
@@ -72,7 +72,7 @@ const AST: { [tag: string]: ASTNode } = {
         }
       },
       ternary: {
-        tag: Tag.mubarum,
+        tag: [Tag.mubarum,Tag.eluke],
         end_without_token: true,
         js_code: "; ",
       }
@@ -330,7 +330,7 @@ const AST: { [tag: string]: ASTNode } = {
         }
       }
     },
-  
+
   },
   [Tag.faluke]: {
     tag: Tag.faluke,
@@ -513,6 +513,21 @@ const AST: { [tag: string]: ASTNode } = {
                 tag: Tag.mubarum,
                 js_code: '\n}\n'
               },
+              right: {
+                tag: Tag.eluke,
+                js_code: '\n} else',
+                left: {
+                  tag: Tag.avhem,
+                  js_code: ' {\n',
+                  left: {
+                    block: true,
+                    left: {
+                      tag: Tag.mubarum,
+                      js_code: '\n}\n'
+                    },
+                  }
+                }
+              },
             },
           },
         },
@@ -599,10 +614,8 @@ class Lexer extends Scanner {
     if (result === '\n')
       this.meta.line++
     this.lex_i++;
-    if (parseInt(result)) {
-      console.log('NUMB-> ', result)
+    if (parseInt(result))
       return new Numb(result)
-    }
     if (result === '.')
       return new Word(result, Tag.dot)
     if (result[0] === "/")
@@ -636,11 +649,9 @@ class CodeGen extends Parser {
     this.syntax_error_status = 0
     this.syntax_block_level = 0
     this.curr_token = this.parse()
-    // console.log('CURR->', this.curr_token)
     if (this.curr_token) {
       this.eval_ast(AST[this.curr_token.tag])
       if (this.syntax_error_status > 0) {
-        console.log(this.stdout)
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key
       }
       this.lex_i--;
@@ -667,7 +678,7 @@ class CodeGen extends Parser {
       if (this.curr_token)
         this.eval_ast(AST_BLOCK[this.curr_token.tag])
       if (this.syntax_error_status > 0)
-        throw 'SYNTAX ERROR ' + this.syntax_error_token.key + ' SHOULD BE ' + tree
+        throw 'SYNTAX ERROR ' + this.syntax_error_token.key + ' SHOULD BE ' + tree.tag
       else
         this.syntax_error_status = 0
     }
@@ -765,49 +776,7 @@ class Lugburz {
   private compiler: Compiler;
   constructor() {
     this.compiler = new Compiler();
-    this.compiler.compile(`
-shal hello ukeav "hello world".
-
-ukhow hello.
-
-katu iuk HelloWorld avhem
-shal hello ukeav "hello world" agh ukhow hello mubarum
-
-ukavrucav Obj avhem var1 var2 var3 mubarum
-
-ro Obj geav var1.
-
-ro Obj geav var1 geav var2.
-
-ro Obj geav var1 ukeav 0.
-
-ro Obj geav var1 geav var2 ukeav 1.
-
-"Hello World" ukpliav nauk-gex /[ ]/g.
-
-avrue agh faluke.
-
-lefav brackeav avrue agh faluke righav brackeav 
-
-avrue differenav ro faluke.
-
-noav avrue.
-
-lefav brackeav noav avrue righav brackeav 
-
-um lefav brackeav avrue differenav ro faluke righav brackeav avhem ukhow hello mubarum
-
-avrue maavch wiavh faluke.
-
-1 leukuk avhan 2.
-
-2 greaavas avhan 1.
-
-2 greaavas avhan eiavhas maavch wiavh 2.
-
-1 leukuk avhan eiavhas maavch wiavh 2.
-
-    `)
+    this.compiler.compile(process.argv[2].replace(/(\\r\\n|\\n|\\r)/gm, " "))
     console.log(this.compiler.files.stdout)
   }
 }

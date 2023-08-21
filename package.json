@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "eval": "npx ts-node Lugburz-ts-compiler/lugburz.ts",
-    "build": "npx tsc Lugburz-ts-compiler/lugburz.ts; npx uglifyjs Lugburz-ts-compiler/lugburz.js > dist/orkish.js"
+    "eval": "npx ts-node dist/lugburz.js",
+    "eval:dev": "npx ts-node Lugburz-ts-compiler/lugburz.ts",
+    "build": "npx tsc Lugburz-ts-compiler/lugburz.ts; npx uglifyjs Lugburz-ts-compiler/lugburz.js > dist/lugburz.js"
   },
   "keywords": [],
   "author": "",
