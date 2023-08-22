@@ -1,0 +1,1 @@
+duraumn shal I ukeav 1 julavil 2 avhem ukhow hello mubarum

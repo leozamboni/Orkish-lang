@@ -2,7 +2,8 @@ enum Tag {
   shal = 256, ukeav, katu, avhem, ukhow, mubarum, iuk, geav, ro,
   bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
   differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
-  maavch, um, wiavh, leukuk, avhan, greaavas, eluke,
+  maavch, um, wiavh, leukuk, avhan, greaavas, eluke, 'nauk-peaav', duraumn,
+  julavil,
 }
 interface ASTNode {
   tag?: Tag | Tag[],
@@ -22,6 +23,63 @@ interface ASTNode {
   end_without_token?: boolean,
 }
 const AST: { [tag: string]: ASTNode } = {
+  [Tag.duraumn]: {
+    tag: Tag.duraumn,
+    js_code: "for ",
+    left: {
+      tag: Tag.shal,
+      js_code: "(let ",
+      left: {
+        tag: Tag.id,
+        js_code: "$key",
+        left: {
+          tag: Tag.ukeav,
+          js_code: " = ",
+          left: {
+            tag: Tag.numb,
+            js_code: "$key;",
+            left: {
+              tag: Tag.julavil,
+              js_code: " i < ",
+              left: {
+                tag: Tag.numb,
+                js_code: "$key; i++)",
+                left: {
+                  tag: Tag.avhem,
+                  js_code: " {\n",
+                  left: {
+                    block: true,
+                    left: {
+                      tag: Tag.mubarum,
+                      js_code: "\n}\n",
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  [Tag['nauk-peaav']]: {
+    tag: Tag['nauk-peaav'],
+    js_code: "while(",
+    left: {
+      expr: true,
+      left: {
+        tag: Tag.avhem,
+        js_code: ") {\n",
+        left: {
+          block: true,
+          left: {
+            tag: Tag.mubarum,
+            js_code: "\n}\n",
+          }
+        }
+      }
+    }
+  },
   [Tag.shal]: {
     tag: Tag.shal,
     js_code: "let ",
@@ -72,7 +130,7 @@ const AST: { [tag: string]: ASTNode } = {
         }
       },
       ternary: {
-        tag: [Tag.mubarum,Tag.eluke],
+        tag: [Tag.mubarum, Tag.eluke],
         end_without_token: true,
         js_code: "; ",
       }
@@ -108,8 +166,13 @@ const AST: { [tag: string]: ASTNode } = {
       left: {
         tag: Tag.dot,
         js_code: ';\n',
+      },
+      right: {
+        tag: Tag.mubarum,
+        js_code: ';',
+        end_without_token: true,
       }
-    }
+    },
   },
   [Tag.ukavrucav]: {
     tag: Tag.ukavrucav,
@@ -245,6 +308,10 @@ const AST: { [tag: string]: ASTNode } = {
           expr: true,
         }
       }
+    },
+    octonary: {
+      tag: Tag.avhem,
+      end_without_token: true,
     }
   },
   [Tag.numb]: {
@@ -401,6 +468,10 @@ const AST: { [tag: string]: ASTNode } = {
           expr: true,
         }
       }
+    },
+    octonary: {
+      tag: Tag.avhem,
+      end_without_token: true,
     }
   },
   [Tag.lefav]: {
@@ -539,7 +610,7 @@ const AST_BLOCK = AST
 const AST_EXPR = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      ['shal', 'bugd', 'ukhow', 'avrue', 'faluke', 'noav', 'lefav', 'numb'].includes(Tag[key])));
+      ['shal', 'bugd', 'ukhow', 'avrue', 'faluke', 'noav', 'lefav', 'numb', 'bugd'].includes(Tag[key])));
 const AST_CLASS_BLOCK = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>

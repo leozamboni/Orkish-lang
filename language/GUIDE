@@ -39,6 +39,9 @@ Syntax is always updated for more accurate Orkish.
 | mulavippak       | multiply       |
 | diviukion        | division       |
 | eluke            | else           |
+| nauk-peaav       | repeat         |
+| duraumn          | during         |
+| julavil          | until          |
 
 ### Hello world
 
@@ -66,6 +69,12 @@ shal hello ukeav "hello world" agh ukhow hello mubarum
 
 ```
 bugd HelloWorld.
+```
+
+#### Recursive
+
+```
+katu iuk HelloWorld avhem ukhow hello agh bugd HelloWorld mubarum
 ```
 
 ### Objects
@@ -205,4 +214,18 @@ righav brackeav avhem ukhow hello mubarum
 ```
 um lefav brackeav avrue differenav ro faluke 
 righav brackeav avhem ukhow hello eluke avhem ukhow hello mubarum
+```
+
+### Loop
+
+#### While 
+
+```
+nauk-peaav avrue avhem ukhow hello mubarum
+```
+
+#### For
+
+```
+duraumn shal I ukeav 1 julavil 2 avhem ukhow hello mubarum
 ```
