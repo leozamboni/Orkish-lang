@@ -3,7 +3,7 @@ enum Tag {
   bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
   differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
   maavch, um, wiavh, leukuk, avhan, greaavas, eluke, 'nauk-peaav', duraumn,
-  julavil,
+  julavil, ukavarav
 }
 interface ASTNode {
   tag?: Tag | Tag[],
@@ -95,6 +95,23 @@ const AST: { [tag: string]: ASTNode } = {
           left: {
             tag: Tag.dot,
             js_code: ";\n",
+          },
+          right: {
+            tag: Tag.ukpliav,
+            js_code: ".split(",
+            left: {
+              tag: Tag["nauk-gex"],
+              js_code: "new RegExp(",
+              left: {
+                tag: Tag.regex,
+                js_code: "$key))",
+                left: {
+                  tag: Tag.mubarum,
+                  end_without_token: true,
+                  js_code: ";\n",
+                }
+              }
+            },
           },
         },
         right: {
@@ -209,8 +226,8 @@ const AST: { [tag: string]: ASTNode } = {
             left: {
               tag: Tag.dot,
               js_code: ';\n',
-            }
-          }
+            },
+          },
         },
         right: {
           tag: Tag.dot,
@@ -237,6 +254,31 @@ const AST: { [tag: string]: ASTNode } = {
           }
         }
       }
+    }
+  },
+  [Tag.id]: {
+    tag: Tag.id,
+    js_code: "$key",
+    left: {
+      tag: Tag.ukpliav,
+      js_code: ".split(",
+      left: {
+        tag: Tag["nauk-gex"],
+        js_code: "new RegExp(",
+        left: {
+          tag: Tag.regex,
+          js_code: "$key))",
+          left: {
+            tag: Tag.mubarum,
+            end_without_token: true,
+            js_code: ";\n",
+          }
+        }
+      },
+    },
+    right: {
+      tag: Tag.dot,
+      js_code: ';\n',
     }
   },
   [Tag.avrue]: {
@@ -610,7 +652,7 @@ const AST_BLOCK = AST
 const AST_EXPR = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      ['shal', 'bugd', 'ukhow', 'avrue', 'faluke', 'noav', 'lefav', 'numb', 'bugd'].includes(Tag[key])));
+      ['shal', 'bugd', 'ukhow', 'avrue', 'faluke', 'noav', 'lefav', 'numb', 'bugd', 'id'].includes(Tag[key])));
 const AST_CLASS_BLOCK = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
@@ -659,7 +701,9 @@ class Scanner {
     this.splited = files.stdin
       .split(/(\/.*?\/g)|(".*?")|[ \n]+|(\.)/)
       .filter(e => e)
-    console.log(this.splited)
+    const i = this.splited.findIndex(e => e === 'ukavarav')
+    if (i >= 0)
+      this.splited = this.splited.slice(i + 1, this.splited.length)
   }
   public scan(i: number) {
     return this.splited[i]
