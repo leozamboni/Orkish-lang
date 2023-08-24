@@ -3,7 +3,7 @@ enum Tag {
   bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
   differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
   maavch, um, wiavh, leukuk, avhan, greaavas, eluke, 'nauk-peaav', duraumn,
-  julavil, ukavarav, 'nauk-avurn', 
+  julavil, ukavarav, 'nauk-avurn',
 }
 interface ASTNode {
   tag?: Tag | Tag[],
@@ -751,7 +751,7 @@ class Scanner {
   splited: string[];
   constructor(files: Files) {
     this.splited = files.stdin
-      .split(/(\/.*\/+)|(".*?")|[ \n]+|(\.)/)
+      .split(/(\/.*\/)|(".*?")|(\.)|[ \n]+/)
       .filter(e => e)
     const i = this.splited.findIndex(e => e === 'ukavarav')
     if (i >= 0)
@@ -944,7 +944,8 @@ class Lugburz {
   private compiler: Compiler;
   constructor() {
     this.compiler = new Compiler();
-    this.compiler.compile(process.argv[2].replace(/(\\r\\n|\\n|\\r)/gm, " "))
+    let aux = process.argv[2].replace(/\\n]/, '@newline_regex@]').replace(/(\\r\\n)|(\\n)|(\\r)/gm, " ").replace(/\@newline_regex\@]/g, '\\n]')
+    this.compiler.compile(aux)
     console.log(this.compiler.files.stdout)
   }
 }
