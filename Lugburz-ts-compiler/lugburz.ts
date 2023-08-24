@@ -3,7 +3,7 @@ enum Tag {
   bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
   differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
   maavch, um, wiavh, leukuk, avhan, greaavas, eluke, 'nauk-peaav', duraumn,
-  julavil, ukavarav
+  julavil, ukavarav, 'nauk-avurn', 
 }
 interface ASTNode {
   tag?: Tag | Tag[],
@@ -23,6 +23,13 @@ interface ASTNode {
   end_without_token?: boolean,
 }
 const AST: { [tag: string]: ASTNode } = {
+  [Tag['nauk-avurn']]: {
+    tag: Tag['nauk-avurn'],
+    js_code: "return ",
+    left: {
+      expr: true,
+    }
+  },
   [Tag.duraumn]: {
     tag: Tag.duraumn,
     js_code: "for ",
@@ -126,6 +133,10 @@ const AST: { [tag: string]: ASTNode } = {
           end_without_token: true,
           js_code: "; ",
         }
+      },
+      right: {
+        tag: Tag.dot,
+        js_code: "; ",
       }
     }
   },
@@ -277,6 +288,47 @@ const AST: { [tag: string]: ASTNode } = {
       },
     },
     right: {
+      tag: Tag.ukeav,
+      js_code: " = ",
+      left: {
+        tag: [Tag.numb, Tag.str, Tag.id],
+        js_code: "$key",
+        left: {
+          tag: Tag.dot,
+          js_code: ";\n",
+        },
+        right: {
+          tag: Tag.ukpliav,
+          js_code: ".split(",
+          left: {
+            tag: Tag["nauk-gex"],
+            js_code: "new RegExp(",
+            left: {
+              tag: Tag.regex,
+              js_code: "$key))",
+              left: {
+                tag: Tag.mubarum,
+                end_without_token: true,
+                js_code: ";\n",
+              }
+            }
+          },
+        },
+      },
+      right: {
+        tag: Tag.agh,
+        js_code: "; ",
+        left: {
+          expr: true,
+        }
+      },
+      ternary: {
+        tag: Tag.mubarum,
+        end_without_token: true,
+        js_code: "; ",
+      }
+    },
+    ternary: {
       tag: Tag.dot,
       js_code: ';\n',
     }
@@ -699,11 +751,12 @@ class Scanner {
   splited: string[];
   constructor(files: Files) {
     this.splited = files.stdin
-      .split(/(\/.*?\/g)|(".*?")|[ \n]+|(\.)/)
+      .split(/(\/.*\/+)|(".*?")|[ \n]+|(\.)/)
       .filter(e => e)
     const i = this.splited.findIndex(e => e === 'ukavarav')
     if (i >= 0)
       this.splited = this.splited.slice(i + 1, this.splited.length)
+    console.log(this.splited)
   }
   public scan(i: number) {
     return this.splited[i]
