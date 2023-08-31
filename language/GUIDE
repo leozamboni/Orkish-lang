@@ -49,7 +49,11 @@ Syntax is always updated for more accurate Orkish.
 | enumeraave       | enumerate      |
 | creaave          | create         |
 | conukav          | const          |
-
+| filavas          | filter         |
+| nauk-move        | remove         |
+| juldefinun       | undefined      |
+| avhen            | then           |
+| avhrow           | throw          |
 ### Hello world
 
 ```
