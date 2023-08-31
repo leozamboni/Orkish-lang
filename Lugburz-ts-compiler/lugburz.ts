@@ -1,14 +1,19 @@
 enum Tag {
   shal = 256, ukeav, katu, avhem, ukhow, mubarum, iuk, geav, ro,
-  bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
-  differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
+  bugd, ukavrucav, ukpliav, 'nauk-gex', agh, brackeav,
+  differenav, '.', avrue, lefav, righav, faluke, eiavhas, noav,
   maavch, um, wiavh, leukuk, avhan, greaavas, eluke, 'nauk-peaav', duraumn,
   julavil, ukavarav, 'nauk-avurn', aceukuk, incremenav, enumeraave, conukav,
   filavas, 'nauk-move', juldefinun, avhen, avhrow,
 }
+enum InternTag {
+  id = 0, regex, numb, str,
+}
+type Tags = Tag | InternTag
+const ValidExprToken: InternTag[] = [InternTag.id, InternTag.numb, InternTag.str]
 interface ASTNode {
-  tag?: Tag | Tag[],
-  js_code?: string | ((tag?: Tag) => string),
+  tag?: Tags | Tags[],
+  js_code?: string | ((tag?: Tag | InternTag) => string),
   left?: ASTNode,
   right?: ASTNode,
   ternary?: ASTNode,
@@ -25,12 +30,12 @@ interface ASTNode {
   end_without_token?: boolean,
   procedure_args?: boolean,
 }
-const AST: { [tag: string]: ASTNode } = {
+const AST: { [tag: number]: ASTNode } = {
   [Tag.avhrow]: {
-    tag: Tag.conukav,
+    tag: Tag.avhrow,
     js_code: "throw ",
     left: {
-      tag: [Tag.id, Tag.str, Tag.numb],
+      tag: ValidExprToken,
       js_code: "$key;",
     }
   },
@@ -38,7 +43,7 @@ const AST: { [tag: string]: ASTNode } = {
     tag: Tag.conukav,
     js_code: "const ",
     left: {
-      tag: Tag.id,
+      tag: InternTag.id,
       js_code: "$key =",
       left: {
         tag: Tag.avhem,
@@ -57,7 +62,7 @@ const AST: { [tag: string]: ASTNode } = {
     tag: Tag.enumeraave,
     js_code: "const ",
     left: {
-      tag: Tag.id,
+      tag: InternTag.id,
       js_code: "$key =",
       left: {
         tag: Tag.avhem,
@@ -86,19 +91,19 @@ const AST: { [tag: string]: ASTNode } = {
       tag: Tag.shal,
       js_code: "(let ",
       left: {
-        tag: Tag.id,
+        tag: InternTag.id,
         js_code: "$key",
         left: {
           tag: Tag.ukeav,
           js_code: " = ",
           left: {
-            tag: Tag.numb,
+            tag: InternTag.numb,
             js_code: "$key;",
             left: {
               tag: Tag.julavil,
               js_code: " i < ",
               left: {
-                tag: Tag.numb,
+                tag: InternTag.numb,
                 js_code: "$key; i++)",
                 left: {
                   tag: Tag.avhem,
@@ -140,7 +145,7 @@ const AST: { [tag: string]: ASTNode } = {
     tag: Tag.shal,
     js_code: "let ",
     left: {
-      tag: Tag.id,
+      tag: InternTag.id,
       js_code: "$key",
       left: {
         tag: [Tag.ukeav, Tag.incremenav],
@@ -152,10 +157,10 @@ const AST: { [tag: string]: ASTNode } = {
           return '$key'
         },
         left: {
-          tag: [Tag.numb, Tag.str, Tag.id],
+          tag: ValidExprToken,
           js_code: "$key",
           left: {
-            tag: Tag.dot,
+            tag: Tag['.'],
             js_code: ";\n",
           },
           right: {
@@ -165,7 +170,7 @@ const AST: { [tag: string]: ASTNode } = {
               tag: Tag["nauk-gex"],
               js_code: "new RegExp(",
               left: {
-                tag: Tag.regex,
+                tag: InternTag.regex,
                 js_code: "$key))",
                 left: {
                   tag: Tag.mubarum,
@@ -180,7 +185,7 @@ const AST: { [tag: string]: ASTNode } = {
                       tag: Tag.juldefinun,
                       js_code: '.filter(e => e)',
                       left: {
-                        tag: Tag.dot,
+                        tag: Tag['.'],
                         end_without_token: true,
                         js_code: ";\n",
                       },
@@ -194,10 +199,10 @@ const AST: { [tag: string]: ASTNode } = {
             tag: Tag.aceukuk,
             js_code: '[',
             left: {
-              tag: [Tag.numb, Tag.str, Tag.id],
+              tag: ValidExprToken,
               js_code: '$key',
               left: {
-                tag: Tag.dot,
+                tag: Tag['.'],
                 js_code: '];\n',
               },
               right: {
@@ -230,10 +235,10 @@ const AST: { [tag: string]: ASTNode } = {
         quaternary: {
           tag: Tag.bugd,
           left: {
-            tag: Tag.id,
+            tag: InternTag.id,
             js_code: "$key()",
             left: {
-              tag: Tag.dot,
+              tag: Tag['.'],
               js_code: ";\n",
             }
           }
@@ -248,13 +253,13 @@ const AST: { [tag: string]: ASTNode } = {
             return '$key'
           },
           left: {
-            tag: Tag.dot,
+            tag: Tag['.'],
             js_code: ';\n',
           },
         }
       },
       right: {
-        tag: Tag.dot,
+        tag: Tag['.'],
         js_code: "; ",
       }
     }
@@ -263,10 +268,10 @@ const AST: { [tag: string]: ASTNode } = {
     tag: Tag.ukhow,
     js_code: "process.stdout.write(",
     left: {
-      tag: [Tag.numb, Tag.str, Tag.id],
+      tag: ValidExprToken,
       js_code: "$key)",
       left: {
-        tag: Tag.dot,
+        tag: Tag['.'],
         js_code: ';\n',
       },
       right: {
@@ -289,7 +294,7 @@ const AST: { [tag: string]: ASTNode } = {
     left: {
       tag: Tag.iuk,
       left: {
-        tag: Tag.id,
+        tag: InternTag.id,
         js_code: "$key",
         left: {
           tag: Tag.avhem,
@@ -336,31 +341,72 @@ const AST: { [tag: string]: ASTNode } = {
   [Tag.bugd]: {
     tag: Tag.bugd,
     left: {
-      tag: Tag.id,
-      js_code: "$key()",
+      tag: InternTag.id,
+      js_code: "$key",
       left: {
-        tag: Tag.dot,
-        js_code: ';\n',
+        tag: Tag['.'],
+        js_code: '();\n',
       },
       right: {
         tag: Tag.mubarum,
-        js_code: ';',
+        js_code: '();',
         end_without_token: true,
       },
       ternary: {
         tag: Tag.avhen,
-        js_code: "; ",
+        js_code: "(); ",
         left: {
           block: true,
         }
       },
+      quaternary: {
+        tag: Tag.lefav,
+        js_code: "(",
+        left: {
+          tag: Tag.brackeav,
+          left: {
+            procedure_args: true,
+            left: {
+              tag: Tag.righav,
+              js_code: ")",
+              left: {
+                tag: Tag.brackeav,
+                left: {
+                  tag: Tag.righav,
+                  js_code: ")",
+                  left: {
+                    tag: Tag.brackeav,
+                  }
+                },
+                right: {
+                  tag: Tag.differenav,
+                  js_code: " !== ",
+                  left: {
+                    tag: Tag.ro,
+                    left: {
+                      expr: true,
+                    }
+                  }
+                },
+              },
+            }
+          }
+        }
+      },
+      quinary: {
+        tag: Tag.righav,
+        js_code: "())",
+        left: {
+          tag: Tag.brackeav,
+        }
+      }
     },
   },
   [Tag.ukavrucav]: {
     tag: Tag.ukavrucav,
     js_code: "class ",
     left: {
-      tag: Tag.id,
+      tag: InternTag.id,
       js_code: "$key ",
       left: {
         tag: Tag.avhem,
@@ -378,7 +424,7 @@ const AST: { [tag: string]: ASTNode } = {
   [Tag.ro]: {
     tag: Tag.ro,
     left: {
-      tag: Tag.id,
+      tag: InternTag.id,
       js_code: "$key",
       left: {
         inline_obj_acess: true,
@@ -386,23 +432,23 @@ const AST: { [tag: string]: ASTNode } = {
           tag: Tag.ukeav,
           js_code: " = ",
           left: {
-            tag: [Tag.numb, Tag.str, Tag.id],
+            tag: ValidExprToken,
             js_code: "$key",
             left: {
-              tag: Tag.dot,
+              tag: Tag['.'],
               js_code: ';\n',
             },
           },
         },
         right: {
-          tag: Tag.dot,
+          tag: Tag['.'],
           js_code: ';\n',
         }
       }
     }
   },
-  [Tag.str]: {
-    tag: Tag.str,
+  [InternTag.str]: {
+    tag: InternTag.str,
     js_code: "$key",
     left: {
       tag: Tag.ukpliav,
@@ -411,18 +457,18 @@ const AST: { [tag: string]: ASTNode } = {
         tag: Tag["nauk-gex"],
         js_code: "new RegExp(",
         left: {
-          tag: Tag.regex,
+          tag: InternTag.regex,
           js_code: "$key))",
           left: {
-            tag: Tag.dot,
+            tag: Tag['.'],
             js_code: ";\n",
           }
         }
       }
     }
   },
-  [Tag.id]: {
-    tag: Tag.id,
+  [InternTag.id]: {
+    tag: InternTag.id,
     js_code: "$key",
     left: {
       tag: Tag.ukpliav,
@@ -431,7 +477,7 @@ const AST: { [tag: string]: ASTNode } = {
         tag: Tag["nauk-gex"],
         js_code: "new RegExp(",
         left: {
-          tag: Tag.regex,
+          tag: InternTag.regex,
           js_code: "$key))",
           left: {
             tag: Tag.mubarum,
@@ -445,10 +491,10 @@ const AST: { [tag: string]: ASTNode } = {
       tag: Tag.ukeav,
       js_code: " = ",
       left: {
-        tag: [Tag.numb, Tag.str, Tag.id],
+        tag: ValidExprToken,
         js_code: "$key",
         left: {
-          tag: Tag.dot,
+          tag: Tag['.'],
           js_code: ";\n",
         },
         right: {
@@ -458,7 +504,7 @@ const AST: { [tag: string]: ASTNode } = {
             tag: Tag["nauk-gex"],
             js_code: "new RegExp(",
             left: {
-              tag: Tag.regex,
+              tag: InternTag.regex,
               js_code: "$key))",
               left: {
                 tag: Tag.mubarum,
@@ -483,17 +529,17 @@ const AST: { [tag: string]: ASTNode } = {
       },
     },
     ternary: {
-      tag: Tag.dot,
+      tag: Tag['.'],
       js_code: ';\n',
     },
     quaternary: {
       tag: Tag.aceukuk,
       js_code: '[',
       left: {
-        tag: [Tag.numb, Tag.id, Tag.str],
+        tag: ValidExprToken,
         js_code: '$key',
         left: {
-          tag: Tag.dot,
+          tag: Tag['.'],
           js_code: '];\n',
         },
         right: {
@@ -504,18 +550,21 @@ const AST: { [tag: string]: ASTNode } = {
       }
     },
     quinary: {
-      tag: Tag.avhem,
-      js_code: ';',
-      end_without_token: true,
+      tag: Tag.righav,
+      js_code: ") ",
+      left: {
+        tag: Tag.brackeav,
+      }
     },
     senary: {
-      tag: Tag.mubarum,
+      tag: [Tag.avhem, Tag.mubarum],
       js_code: ';',
       end_without_token: true,
     },
     septenary: {
       inline_obj_acess: true,
-    }
+    },
+
   },
   [Tag.avrue]: {
     tag: Tag.avrue,
@@ -534,7 +583,7 @@ const AST: { [tag: string]: ASTNode } = {
       }
     },
     right: {
-      tag: Tag.dot,
+      tag: Tag['.'],
       js_code: ";\n",
     },
     ternary: {
@@ -592,8 +641,8 @@ const AST: { [tag: string]: ASTNode } = {
       end_without_token: true,
     }
   },
-  [Tag.numb]: {
-    tag: Tag.numb,
+  [InternTag.numb]: {
+    tag: InternTag.numb,
     js_code: '$key',
     left: {
       tag: [Tag.agh, Tag.eiavhas],
@@ -609,7 +658,7 @@ const AST: { [tag: string]: ASTNode } = {
       }
     },
     right: {
-      tag: Tag.dot,
+      tag: Tag['.'],
       js_code: ";\n",
     },
     ternary: {
@@ -694,7 +743,7 @@ const AST: { [tag: string]: ASTNode } = {
       }
     },
     right: {
-      tag: Tag.dot,
+      tag: Tag['.'],
       js_code: ";\n",
     },
     ternary: {
@@ -773,7 +822,7 @@ const AST: { [tag: string]: ASTNode } = {
     tag: Tag.noav,
     js_code: '!',
     left: {
-      tag: [Tag.id, Tag.faluke, Tag.avrue],
+      tag: ValidExprToken,
       js_code: (tag) => {
         switch (tag) {
           case Tag.faluke: return "false"
@@ -782,7 +831,7 @@ const AST: { [tag: string]: ASTNode } = {
         return '$key'
       },
       left: {
-        tag: Tag.dot,
+        tag: Tag['.'],
         js_code: ';\n'
       },
       right: {
@@ -860,7 +909,13 @@ const AST: { [tag: string]: ASTNode } = {
               block: true,
               left: {
                 tag: Tag.mubarum,
-                js_code: '\n}\n'
+                js_code: '\n}\n',
+                left: {
+                  tag: Tag.avhen,
+                  left: {
+                    block: true,
+                  }
+                },
               },
               right: {
                 tag: Tag.eluke,
@@ -877,6 +932,10 @@ const AST: { [tag: string]: ASTNode } = {
                   }
                 }
               },
+              ternary: {
+                tag: Tag.mubarum,
+                js_code: '\n}\n',
+              },
             },
           },
         },
@@ -888,14 +947,15 @@ const AST_BLOCK = AST
 const AST_EXPR = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      ['shal', 'bugd', 'ukhow', 'avrue', 'faluke', 'noav', 'lefav', 'numb', 'bugd', 'id'].includes(Tag[key])));
+      [Tag.shal, Tag.bugd, Tag.ukhow, Tag.avrue, Tag.faluke, Tag.noav, Tag.lefav,
+      InternTag.numb, Tag.bugd, InternTag.id].includes(Number(key))));
 const AST_CLASS_BLOCK = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      ['shal'].includes(Tag[key])));
+      [Tag.shal].includes(Number(key))));
 class Token {
   key: string;
-  tag: Tag
+  tag: Tags;
   constructor(k, t) {
     this.key = k;
     this.tag = t
@@ -908,17 +968,17 @@ class Word extends Token {
 }
 class Numb extends Token {
   constructor(k) {
-    super(k, Tag.numb);
+    super(k, InternTag.numb);
   }
 }
 class Str extends Token {
   constructor(k) {
-    super(k, Tag.str);
+    super(k, InternTag.str);
   }
 }
 class Regex extends Token {
   constructor(k) {
-    super(k, Tag.regex);
+    super(k, InternTag.regex);
   }
 }
 class Files {
@@ -968,15 +1028,15 @@ class Lexer extends Scanner {
     this.lex_i++;
     if (parseInt(result))
       return new Numb(result)
-    if (result === '.')
-      return new Word(result, Tag.dot)
+    // if (result === '.')
+    //   return new Word(result, Tag['.'])
     if (result[0] === "/")
       return new Regex(result)
     if (result[0] === "\"" || result[0] === "'")
       return new Str(result)
     if (Tag[result])
       return new Word(result, Tag[result])
-    return new Word(result, Tag.id)
+    return new Word(result, InternTag.id)
   }
 }
 class Parser extends Lexer {
@@ -1004,6 +1064,8 @@ class CodeGen extends Parser {
     if (this.curr_token) {
       this.eval_ast(AST[this.curr_token.tag])
       if (this.syntax_error_status > 0) {
+        console.log('aqui');
+
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key
       }
       this.lex_i--;
@@ -1012,16 +1074,18 @@ class CodeGen extends Parser {
   private eval_ast(tree: ASTNode | undefined) {
     if (!tree || this.syntax_error_status < 0) return
     if (tree.procedure_args) {
-      while (this.curr_token?.tag === Tag.id) {
+      while (this.curr_token?.tag === InternTag.id) {
         this.code('$key')
         this.curr_token = this.lex()
+        if (this.curr_token?.tag === InternTag.id)
+          this.code(',')
       }
     }
     else if (tree.inline_obj_acess) {
       while (this.curr_token?.tag === Tag.geav) {
         this.code('.')
         this.curr_token = this.lex()
-        if (this.curr_token?.tag === Tag.id)
+        if (this.curr_token?.tag === InternTag.id)
           this.code('$key')
         else
           break
@@ -1030,7 +1094,7 @@ class CodeGen extends Parser {
       this.code(';')
     } else if (tree.obj_block) {
       let _enum_val = 0
-      while (this.curr_token?.tag && [Tag.id, Tag.str].includes(this.curr_token.tag)) {
+      while (this.curr_token?.tag && [InternTag.id, InternTag.str].includes(this.curr_token.tag as number)) {
         this.code('$key')
         this.curr_token = this.lex()
         if (this.curr_token?.tag === Tag.ukeav) {
@@ -1046,7 +1110,7 @@ class CodeGen extends Parser {
         this.code(',\n')
       }
     } else if (tree.var_block) {
-      while (this.curr_token?.tag && [Tag.id, Tag.str].includes(this.curr_token.tag)) {
+      while (this.curr_token?.tag && [InternTag.id, InternTag.str].includes(this.curr_token.tag as number)) {
         this.code('$key')
         this.curr_token = this.lex()
         if (this.curr_token?.tag === Tag.ukeav) {
@@ -1128,7 +1192,7 @@ class CodeGen extends Parser {
     this.eval_ast(tree?.septenary)
     this.eval_ast(tree?.octonary)
   }
-  private code(code: string | ((tag?: Tag) => string)) {
+  private code(code: string | ((tag?: Tags) => string)) {
     let str = ''
     if (typeof code === 'string')
       str = code

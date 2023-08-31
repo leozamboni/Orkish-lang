@@ -1,1 +1,1 @@
-katu iuk HelloWorld lefav brackeav _str righav brackeav avhem ukhow _str mubarum
+katu iuk HelloWorld lefav brackeav str righav brackeav avhem ukhow str mubarum
