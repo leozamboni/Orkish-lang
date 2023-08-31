@@ -3,7 +3,8 @@ enum Tag {
   bugd, ukavrucav, ukpliav, 'nauk-gex', agh, str, brackeav, regex, numb,
   differenav, id, dot, avrue, lefav, righav, faluke, eiavhas, noav,
   maavch, um, wiavh, leukuk, avhan, greaavas, eluke, 'nauk-peaav', duraumn,
-  julavil, ukavarav, 'nauk-avurn', aceukuk, incremenav, enumeraave,
+  julavil, ukavarav, 'nauk-avurn', aceukuk, incremenav, enumeraave, conukav,
+
 }
 interface ASTNode {
   tag?: Tag | Tag[],
@@ -19,11 +20,30 @@ interface ASTNode {
   expr?: boolean,
   block?: boolean,
   var_block?: boolean,
-  enum_block?: boolean,
+  obj_block?: boolean,
   inline_obj_acess?: boolean,
   end_without_token?: boolean,
 }
 const AST: { [tag: string]: ASTNode } = {
+  [Tag.conukav]: {
+    tag: Tag.conukav,
+    js_code: "const ",
+    left: {
+      tag: Tag.id,
+      js_code: "$key =",
+      left: {
+        tag: Tag.avhem,
+        js_code: '{\n',
+        left: {
+          obj_block: true,
+          left: {
+            tag: Tag.mubarum,
+            js_code: '}\n',
+          }
+        }
+      }
+    }
+  },
   [Tag.enumeraave]: {
     tag: Tag.enumeraave,
     js_code: "const ",
@@ -34,7 +54,7 @@ const AST: { [tag: string]: ASTNode } = {
         tag: Tag.avhem,
         js_code: '{\n',
         left: {
-          enum_block: true,
+          obj_block: true,
           left: {
             tag: Tag.mubarum,
             js_code: '}\n',
@@ -923,7 +943,7 @@ class CodeGen extends Parser {
           break
         this.curr_token = this.lex()
       }
-    } else if (tree.enum_block) {
+    } else if (tree.obj_block) {
       let _enum_val=0
       while (this.curr_token?.tag && [Tag.id,Tag.str].includes(this.curr_token.tag)) {
         this.code('$key')

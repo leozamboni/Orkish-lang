@@ -2,4 +2,3 @@ node_modules
 dist
 *-lock
 Lugburz-ts-compiler/*.js
-Mordor-orkish-compiler/*.js
