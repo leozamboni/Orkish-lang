@@ -54,6 +54,9 @@ Syntax is always updated for more accurate Orkish.
 | juldefinun       | undefined      |
 | avhen            | then           |
 | avhrow           | throw          |
+| concluukion      | conclusion     |
+| includeuk        | includes       |
+
 ### Hello world
 
 ```

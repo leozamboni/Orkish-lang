@@ -4,15 +4,14 @@ enum Tag {
   differenav, '.', avrue, lefav, righav, faluke, eiavhas, noav,
   maavch, um, wiavh, leukuk, avhan, greaavas, eluke, 'nauk-peaav', duraumn,
   julavil, ukavarav, 'nauk-avurn', aceukuk, incremenav, enumeraave, conukav,
-  filavas, 'nauk-move', juldefinun, avhen, avhrow,
+  filavas, 'nauk-move', juldefinun, avhen, avhrow, concluukion, includeuk,
 }
-enum InternTag {
-  id = 0, regex, numb, str,
-}
-type Tags = Tag | InternTag
-const ValidExprToken: InternTag[] = [InternTag.id, InternTag.numb, InternTag.str]
+enum InternTag { id = 0, regex, numb, str }
+type TypeTag = Tag | InternTag
+const ValidExprToken: TypeTag[] = [InternTag.id, InternTag.numb, InternTag.str];
+const ValidEndToken: TypeTag[] = [Tag.mubarum, Tag.concluukion];
 interface ASTNode {
-  tag?: Tags | Tags[],
+  tag?: TypeTag | TypeTag[],
   js_code?: string | ((tag?: Tag | InternTag) => string),
   left?: ASTNode,
   right?: ASTNode,
@@ -51,7 +50,7 @@ const AST: { [tag: number]: ASTNode } = {
         left: {
           obj_block: true,
           left: {
-            tag: Tag.mubarum,
+            tag: ValidEndToken,
             js_code: '}\n',
           }
         }
@@ -70,7 +69,7 @@ const AST: { [tag: number]: ASTNode } = {
         left: {
           obj_block: true,
           left: {
-            tag: Tag.mubarum,
+            tag: ValidEndToken,
             js_code: '}\n',
           }
         }
@@ -111,7 +110,7 @@ const AST: { [tag: number]: ASTNode } = {
                   left: {
                     block: true,
                     left: {
-                      tag: Tag.mubarum,
+                      tag: ValidEndToken,
                       js_code: " }\n",
                     }
                   }
@@ -134,7 +133,7 @@ const AST: { [tag: number]: ASTNode } = {
         left: {
           block: true,
           left: {
-            tag: Tag.mubarum,
+            tag: ValidEndToken,
             js_code: " }\n",
           }
         }
@@ -173,7 +172,7 @@ const AST: { [tag: number]: ASTNode } = {
                 tag: InternTag.regex,
                 js_code: "$key))",
                 left: {
-                  tag: Tag.mubarum,
+                  tag: ValidEndToken,
                   end_without_token: true,
                   js_code: ";\n",
                 },
@@ -206,7 +205,7 @@ const AST: { [tag: number]: ASTNode } = {
                 js_code: '];\n',
               },
               right: {
-                tag: Tag.mubarum,
+                tag: ValidEndToken,
                 end_without_token: true,
                 js_code: "]; ",
               },
@@ -228,7 +227,7 @@ const AST: { [tag: number]: ASTNode } = {
           }
         },
         ternary: {
-          tag: Tag.mubarum,
+          tag: ValidEndToken,
           end_without_token: true,
           js_code: "; ",
         },
@@ -302,7 +301,7 @@ const AST: { [tag: number]: ASTNode } = {
           left: {
             block: true,
             left: {
-              tag: Tag.mubarum,
+              tag: ValidEndToken,
               js_code: '\n}\n'
             }
           }
@@ -327,7 +326,7 @@ const AST: { [tag: number]: ASTNode } = {
                 left: {
                   block: true,
                   left: {
-                    tag: Tag.mubarum,
+                    tag: ValidEndToken,
                     js_code: '\n}\n'
                   },
                 },
@@ -348,7 +347,7 @@ const AST: { [tag: number]: ASTNode } = {
         js_code: '();\n',
       },
       right: {
-        tag: Tag.mubarum,
+        tag: ValidEndToken,
         js_code: '();',
         end_without_token: true,
       },
@@ -414,7 +413,7 @@ const AST: { [tag: number]: ASTNode } = {
         left: {
           var_block: true,
           left: {
-            tag: Tag.mubarum,
+            tag: ValidEndToken,
             js_code: '}\n',
           }
         }
@@ -480,7 +479,7 @@ const AST: { [tag: number]: ASTNode } = {
           tag: InternTag.regex,
           js_code: "$key))",
           left: {
-            tag: Tag.mubarum,
+            tag: ValidEndToken,
             end_without_token: true,
             js_code: ";\n",
           }
@@ -507,7 +506,7 @@ const AST: { [tag: number]: ASTNode } = {
               tag: InternTag.regex,
               js_code: "$key))",
               left: {
-                tag: Tag.mubarum,
+                tag: ValidEndToken,
                 end_without_token: true,
                 js_code: ";\n",
               }
@@ -523,7 +522,7 @@ const AST: { [tag: number]: ASTNode } = {
         }
       },
       ternary: {
-        tag: Tag.mubarum,
+        tag: ValidEndToken,
         end_without_token: true,
         js_code: "; ",
       },
@@ -543,28 +542,46 @@ const AST: { [tag: number]: ASTNode } = {
           js_code: '];\n',
         },
         right: {
-          tag: Tag.mubarum,
+          tag: ValidEndToken,
+          js_code: '];',
+        },
+        ternary: {
+          tag: Tag.eluke,
           end_without_token: true,
-          js_code: '];\n',
+          js_code: '];',
         }
       }
     },
     quinary: {
+      tag: Tag.includeuk,
+      js_code: ".includes",
+      left: {
+        tag: ValidExprToken,
+        js_code: "($key)",
+        left: {
+          tag: Tag.righav,
+          js_code: ") ",
+          left: {
+            tag: Tag.brackeav,
+          }
+        },
+      }
+    },
+    senary: {
       tag: Tag.righav,
       js_code: ") ",
       left: {
         tag: Tag.brackeav,
       }
     },
-    senary: {
+    septenary: {
       tag: [Tag.avhem, Tag.mubarum],
       js_code: ';',
       end_without_token: true,
     },
-    septenary: {
+    octonary: {
       inline_obj_acess: true,
     },
-
   },
   [Tag.avrue]: {
     tag: Tag.avrue,
@@ -840,7 +857,33 @@ const AST: { [tag: number]: ASTNode } = {
         left: {
           tag: Tag.brackeav,
         }
-      }
+      },
+      ternary: {
+        tag: Tag.aceukuk,
+        js_code: '[',
+        left: {
+          tag: ValidExprToken,
+          js_code: '$key',
+          left: {
+            tag: Tag.righav,
+            js_code: "]) ",
+            left: {
+              tag: Tag.brackeav,
+            }
+          },
+        }
+      },
+      quaternary: {
+        inline_obj_acess: true,
+        left: {
+          tag: Tag.righav,
+          js_code: ") ",
+          left: {
+            tag: Tag.brackeav,
+          }
+        },
+      },
+
     },
     right: {
       tag: [Tag.agh, Tag.eiavhas],
@@ -908,14 +951,8 @@ const AST: { [tag: number]: ASTNode } = {
             left: {
               block: true,
               left: {
-                tag: Tag.mubarum,
+                tag: ValidEndToken,
                 js_code: '\n}\n',
-                left: {
-                  tag: Tag.avhen,
-                  left: {
-                    block: true,
-                  }
-                },
               },
               right: {
                 tag: Tag.eluke,
@@ -926,14 +963,15 @@ const AST: { [tag: number]: ASTNode } = {
                   left: {
                     block: true,
                     left: {
-                      tag: Tag.mubarum,
+                      tag: ValidEndToken,
                       js_code: '\n}'
                     },
                   }
                 }
               },
               ternary: {
-                tag: Tag.mubarum,
+                tag: ValidEndToken,
+                // end_without_token: true,
                 js_code: '\n}\n',
               },
             },
@@ -955,7 +993,7 @@ const AST_CLASS_BLOCK = Object.fromEntries(
       [Tag.shal].includes(Number(key))));
 class Token {
   key: string;
-  tag: Tags;
+  tag: TypeTag;
   constructor(k, t) {
     this.key = k;
     this.tag = t
@@ -1064,7 +1102,7 @@ class CodeGen extends Parser {
     if (this.curr_token) {
       this.eval_ast(AST[this.curr_token.tag])
       if (this.syntax_error_status > 0) {
-        console.log('aqui');
+        console.log(this.stdout);
 
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key
       }
@@ -1091,7 +1129,8 @@ class CodeGen extends Parser {
           break
         this.curr_token = this.lex()
       }
-      this.code(';')
+      if (this.curr_token?.tag !== Tag.righav)
+        this.code(';')
     } else if (tree.obj_block) {
       let _enum_val = 0
       while (this.curr_token?.tag && [InternTag.id, InternTag.str].includes(this.curr_token.tag as number)) {
@@ -1192,7 +1231,7 @@ class CodeGen extends Parser {
     this.eval_ast(tree?.septenary)
     this.eval_ast(tree?.octonary)
   }
-  private code(code: string | ((tag?: Tags) => string)) {
+  private code(code: string | ((tag?: TypeTag) => string)) {
     let str = ''
     if (typeof code === 'string')
       str = code
