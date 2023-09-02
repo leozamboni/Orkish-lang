@@ -17,11 +17,14 @@ avhem nauk-avurn tk_tag mubarum concluukion
 katu iuk _check_token lefav brackeav token expected code righav brackeav avhem um lefav brackeav 
 bugd _get_tag lefav brackeav token righav brackeav differenav ro expected righav brackeav avhem 
 avhrow "ERROR" eluke avhem um lefav brackeav code righav brackeav avhem nauk-avurn code 
-eluke avhem  nauk-avurn token mubarum mubarum concluukion
+eluke avhem nauk-avurn token mubarum mubarum concluukion
 
 katu iuk _get_token lefav brackeav i righav brackeav avhem um lefav brackeav splited aceukuk
 i righav brackeav avhem nauk-avurn splited aceukuk i eluke avhem avhrow "ERROR" mubarum concluukion
 
 katu iuk _out_code lefav brackeav code righav brackeav avhem um lefav brackeav code includeuk "key" 
-righav brackeav avhem nauk-avurn splited aceukuk i eluke avhem avhrow "ERROR" mubarum concluukion
+righav brackeav avhem stdout incremenav code nauk-place "key" splited aceukuk i eluke avhem stdout 
+incremenav code mubarum concluukion
+
+katu iuk _increase_index avhem nauk-avurn incremenav i concluukion
 

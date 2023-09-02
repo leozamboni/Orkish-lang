@@ -5,6 +5,7 @@ enum Tag {
   maavch, um, wiavh, leukuk, avhan, greaavas, eluke, 'nauk-peaav', duraumn,
   julavil, ukavarav, 'nauk-avurn', aceukuk, incremenav, enumeraave, conukav,
   filavas, 'nauk-move', juldefinun, avhen, avhrow, concluukion, includeuk,
+  'nauk-place',
 }
 enum InternTag { id = 0, regex, numb, str }
 type TypeTag = Tag | InternTag
@@ -487,8 +488,14 @@ const AST: { [tag: number]: ASTNode } = {
       },
     },
     right: {
-      tag: Tag.ukeav,
-      js_code: " = ",
+      tag: [Tag.ukeav, Tag.incremenav],
+      js_code: (tag) => {
+        switch (tag) {
+          case Tag.ukeav: return " = "
+          case Tag.incremenav: return " += "
+        }
+        return '$key'
+      },
       left: {
         tag: ValidExprToken,
         js_code: "$key",
@@ -513,6 +520,18 @@ const AST: { [tag: number]: ASTNode } = {
             }
           },
         },
+        ternary: {
+          tag: Tag['nauk-place'],
+          js_code: ".replace(",
+          left: {
+            tag: ValidExprToken,
+            js_code: "$key,",
+            left: {
+              expr: true,
+              js_code: ")",
+            }
+          }
+        }
       },
       right: {
         tag: Tag.avhen,
@@ -548,7 +567,7 @@ const AST: { [tag: number]: ASTNode } = {
         ternary: {
           tag: Tag.eluke,
           end_without_token: true,
-          js_code: '];',
+          js_code: ']',
         }
       }
     },
@@ -979,13 +998,20 @@ const AST: { [tag: number]: ASTNode } = {
         },
       },
     },
+  },
+  [Tag.incremenav]: {
+    tag: Tag.incremenav,
+    js_code: '++',
+    left: {
+      expr: true,
+    }
   }
 }
 const AST_BLOCK = AST
 const AST_EXPR = Object.fromEntries(
   Object.entries(AST)
     .filter(([key, value]) =>
-      [Tag.shal, Tag.bugd, Tag.ukhow, Tag.avrue, Tag.faluke, Tag.noav, Tag.lefav,
+      [Tag.shal, Tag.bugd, Tag.ukhow, Tag.avrue, Tag.faluke, Tag.noav, Tag.lefav, Tag.incremenav,
       InternTag.numb, Tag.bugd, InternTag.id].includes(Number(key))));
 const AST_CLASS_BLOCK = Object.fromEntries(
   Object.entries(AST)
@@ -1171,6 +1197,8 @@ class CodeGen extends Parser {
     else if (tree.expr) {
       if (this.curr_token)
         this.eval_ast(AST_EXPR[this.curr_token.tag])
+      if (tree.js_code)
+        this.code(tree.js_code)
       if (this.syntax_error_status > 0)
         throw 'SYNTAX ERROR ' + this.syntax_error_token.key + ' SHOULD BE ' + tree.js_code
       else
