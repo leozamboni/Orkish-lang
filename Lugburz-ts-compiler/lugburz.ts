@@ -125,22 +125,47 @@ const AST: { [tag: number]: ASTNode } = {
   },
   [Tag['nauk-peaav']]: {
     tag: Tag['nauk-peaav'],
-    js_code: "while(",
+    js_code: "while",
     left: {
-      expr: true,
+      tag: Tag.lefav,
+      js_code: '(',
       left: {
-        tag: Tag.avhem,
-        js_code: ") {\n",
+        tag: Tag.brackeav,
         left: {
-          block: true,
-          left: {
-            tag: ValidEndToken,
-            js_code: " }\n",
-          }
-        }
-      }
-    }
+          expr: true,
+          right: {
+            tag: Tag.avhem,
+            js_code: '{\n',
+            left: {
+              block: true,
+              left: {
+                tag: ValidEndToken,
+                js_code: '\n}\n',
+              },
+            },
+          },
+        },
+      },
+    },
   },
+  // [Tag['nauk-peaav']]: {
+  //   tag: Tag['nauk-peaav'],
+  //   js_code: "while(",
+  //   left: {
+  //     expr: true,
+  //     left: {
+  //       tag: Tag.avhem,
+  //       js_code: ") {\n",
+  //       left: {
+  //         block: true,
+  //         left: {
+  //           tag: ValidEndToken,
+  //           js_code: " }\n",
+  //         }
+  //       }
+  //     }
+  //   }
+  // },
   [Tag.shal]: {
     tag: Tag.shal,
     js_code: "let ",
@@ -240,7 +265,7 @@ const AST: { [tag: number]: ASTNode } = {
             left: {
               tag: Tag['.'],
               js_code: ";\n",
-            }
+            },
           }
         },
         quinary: {
@@ -388,6 +413,10 @@ const AST: { [tag: number]: ASTNode } = {
                     }
                   }
                 },
+                ternary: {
+                  tag: ValidEndToken,
+                  end_without_token: true,
+                }
               },
             }
           }
@@ -1138,11 +1167,53 @@ class CodeGen extends Parser {
   private eval_ast(tree: ASTNode | undefined) {
     if (!tree || this.syntax_error_status < 0) return
     if (tree.procedure_args) {
-      while (this.curr_token?.tag === InternTag.id) {
+      // while (this.curr_token?.tag === InternTag.id) {
+      //   this.code('$key')
+      //   this.curr_token = this.lex()
+      //   if (this.curr_token?.tag === InternTag.id)
+      //     this.code(',')
+      // }
+      let open = 0
+      while (true) {
+        let apply = false
+        if (this.curr_token?.tag === Tag.bugd) {
+          this.curr_token = this.lex()
+          apply = true
+        }
         this.code('$key')
+        if (apply) {
+          this.code('()')
+          apply = false
+        }
         this.curr_token = this.lex()
         if (this.curr_token?.tag === InternTag.id)
           this.code(',')
+        if (this.curr_token?.tag === Tag.aceukuk) {
+          this.code('[')
+          this.curr_token = this.lex()
+          let apply = false
+          if (this.curr_token?.tag === Tag.bugd) {
+            this.curr_token = this.lex()
+            apply = true
+          }
+          this.code('$key')
+          if (apply) {
+            this.code('()')
+            apply = false
+          }
+          this.curr_token = this.lex()
+          this.code(']')
+        }
+          
+        if (this.curr_token?.tag === Tag.lefav) {
+          open++;
+          this.code('(')
+        }
+        if (this.curr_token?.tag === Tag.righav) {
+          if (open === 0) break
+          this.code(')')
+          open--;
+        }
       }
     }
     else if (tree.inline_obj_acess) {
